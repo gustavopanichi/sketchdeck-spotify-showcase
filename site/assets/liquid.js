@@ -19,7 +19,7 @@
   // ---- config (mirrors lib/carousel/config.js of the original) ----
   const CONFIG = { PANEL_H: 450, GAP: 12, EASE: 0.09, WHEEL: 1.4, DRAG: 1.6, FRICTION: 0.865, SNAP: true, SNAP_IDLE_MS: 120, SNAP_EASE: 0.05, SHRINK_MAX: 60, SHRINK_ATTACK: 0.25, SHRINK_DECAY: 0.06 };
   const INTERACT = { CLICK_SLOP: 6, FLICK_IDLE_MS: 90, TOUCH_DRAG: 1.0, TOUCH_EASE: 0.22, TOUCH_CLICK_SLOP: 12 };
-  const LENS = { rotation: 65, sizeX: 0.565, sizeY: 1, zoom: 0, dispersion: 11, glow: 4.2, whiteGlow: 0.24, novaSize: 12, blueRing: 6, ringRadius: 0.49, ringWidth: 0.014, shimmer: true, shimmerFreq: 12, shimmerSpeed: 3.5, shimmerDepth: 0.12, rimStart: 0.578, rimTangential: 0.6, rimInward: 0, rimFreq1: 2, rimFreq2: 1, blueColor: [0 / 255, 157 / 255, 255 / 255], rimLine: 1.4, rimLinePos: 0.488, rimLineWidth: 0.003, samples: 16 };
+  const LENS = { rotation: 65, sizeX: 0.565, sizeY: 1, zoom: 0, dispersion: 11, glow: 4.2, whiteGlow: 0.24, novaSize: 12, blueRing: 6, ringRadius: 0.49, ringWidth: 0.014, shimmer: true, shimmerFreq: 12, shimmerSpeed: 3.5, shimmerDepth: 0.12, rimStart: 0.578, rimTangential: 0.18, rimInward: 0, rimFreq1: 2, rimFreq2: 1, blueColor: [0 / 255, 157 / 255, 255 / 255], rimLine: 1.4, rimLinePos: 0.488, rimLineWidth: 0.003, samples: 16 };
   const AUTO = { speed: 34, resumeAfterMs: 2500 }; // px/s idle drift; resumes this long after the last wheel/drag
 const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 1.0, stagger: 0.07, fromBelow: 0.9, growDelay: 0.25, growDuration: 2.15, growStagger: 0.085, lensBloom: 1.4 };
   const PAGE_BG = [0x0E / 255, 0x0E / 255, 0x0E / 255]; // page dark grey: the framebuffer gaps blend into the page
@@ -53,6 +53,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     uniform vec3  uBlueColor;
     uniform float uRimLine, uRimLinePos, uRimLineWidth, uRotation;
     uniform vec3  uPageBg;
+    uniform float uRimScale;  // (sizeX+sizeY)/2 of the ORIGINAL lens: keeps the rim wave the same size at any aspect
     const int MAX_SAMPLES = 16;
 
     vec3 discLens(vec2 center, float aspectCorrect, out float outA) {
@@ -74,7 +75,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
       float pull = uZoom * 0.30 * (nd * nd);
       float rimStrength = smoothstep(uRimStart, 1.0, nd);
       float fluidWave = sin(angle * uRimFreq1) * 0.55 + sin(angle * uRimFreq2) * 0.25;
-      float rScreen = (uSizeX + uSizeY) * 0.5;
+      float rScreen = uRimScale;
       vec2  rimOff = tangentDir * fluidWave * rimStrength * rScreen * uRimTangential;
       vec2  rimPull = -radialDir * rimStrength * rScreen * uRimInward;
       vec2 baseUV = center + offset * (1.0 - pull) + rimOff + rimPull;
@@ -93,8 +94,10 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
       }
       col /= max(caW, vec3(0.001));
       alpha /= float(MAX_SAMPLES);
-      col = mix(uPageBg, col, alpha);
-      col = mix(uPageBg, col, alpha);
+      vec4 b0 = texture2D(uTex, vUv);
+      vec3 under = mix(uPageBg, b0.rgb, b0.a);
+      col = mix(under, col, alpha);
+      alpha = max(alpha, b0.a);
       float r2 = shapeND * shapeND * 0.25;
       float gs = max(uNovaSize * uGlow * 0.003, 0.004);
       float nova = exp(-r2 / gs) + exp(-r2 / (gs * 7.0)) * 0.18;
@@ -124,7 +127,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]), gl.STATIC_DRAW);
   const U = (p, names) => Object.fromEntries(names.map((n) => [n, gl.getUniformLocation(p, n)]));
   const PU = U(panelProg, ["uRes", "uRect", "uTex"]);
-  const LU = U(lensProg, ["uTex", "uRes", "uCenter", "uSizeX", "uSizeY", "uAspect", "uZoom", "uDispersion", "uGlow", "uWhiteGlow", "uNovaSize", "uBlueRing", "uRingRadius", "uRingWidth", "uShimmer", "uShimmerFreq", "uShimmerSpeed", "uShimmerDepth", "uTime", "uRimStart", "uRimTangential", "uRimInward", "uRimFreq1", "uRimFreq2", "uBlueColor", "uRimLine", "uRimLinePos", "uRimLineWidth", "uRotation", "uPageBg"]);
+  const LU = U(lensProg, ["uTex", "uRes", "uCenter", "uSizeX", "uSizeY", "uAspect", "uZoom", "uDispersion", "uGlow", "uWhiteGlow", "uNovaSize", "uBlueRing", "uRingRadius", "uRingWidth", "uShimmer", "uShimmerFreq", "uShimmerSpeed", "uShimmerDepth", "uTime", "uRimStart", "uRimTangential", "uRimInward", "uRimFreq1", "uRimFreq2", "uBlueColor", "uRimLine", "uRimLinePos", "uRimLineWidth", "uRotation", "uPageBg", "uRimScale"]);
   const panelA = gl.getAttribLocation(panelProg, "a"), lensA = gl.getAttribLocation(lensProg, "a");
 
   // ---- textures: one per card; videos re-uploaded every frame ----
@@ -420,6 +423,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     gl.uniform1f(LU.uRimLine, LENS.rimLine * fx); gl.uniform1f(LU.uRimLinePos, LENS.rimLinePos); gl.uniform1f(LU.uRimLineWidth, LENS.rimLineWidth);
     gl.uniform1f(LU.uRotation, LENS.rotation * Math.PI / 180);
     gl.uniform3f(LU.uPageBg, PAGE_BG[0], PAGE_BG[1], PAGE_BG[2]);
+    gl.uniform1f(LU.uRimScale, (0.565 + 1) * 0.5);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
