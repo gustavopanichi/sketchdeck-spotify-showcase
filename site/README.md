@@ -26,7 +26,7 @@ The two long films are about 100 MB each; if the host caps file size, move them 
 ## Notes
 - Fonts: Spotify Mix (woff2) is embedded from `assets/fonts/`.
 - Logos: `assets/img/ui/halfpipe.png` (SketchDeck) and `assets/img/ui/spotify.png`.
-- Home page: a strip of project cards born at the centre that travel outward to both edges and grow, looping forever (after melius.com). Tunables sit at the top of `assets/carousel.js`: `TRAVEL` (seconds centre to edge), `NEAR_W` (card size at the edge), `P` (growth curve), `GAP`. Projects listed in `cardVideos` (data.mjs) show a looping clip instead of a still.
+- Home page: a 3D ring of project cards seen from its centre (CSS 3D, `assets/carousel3d.js`). The ring turns once every `PERIOD` seconds; cards blur and fade past `FADE_FROM`/`VISIBLE` degrees, and the strip edges are blurred by a backdrop-filter vignette. Projects listed in `cardVideos` (data.mjs) show a looping clip instead of a still. The earlier centre-out strip is kept in `assets/carousel.js`, unused.
 - The stats drawer opens from the notch attached to the top edge and slides down; its content is `stats` and `teams` in `data.mjs`.
 - Styling follows the SketchDeck brand: Blue Moon background, White Rabbit type, Syne (uppercase) for headings and Inter for body, loaded from Google Fonts. Tokens sit at the top of `assets/style.css`. Client colours appear only inside case-study imagery.
 - Every project has a square `card.jpg` (strip thumbnail) and a 16:9 `hero.jpg` cut from the same source; regenerate both together if you swap the source image.
