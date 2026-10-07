@@ -22,7 +22,7 @@
   const LENS = { rotation: 65, sizeX: 0.565, sizeY: 1, zoom: 0, dispersion: 11, glow: 4.2, whiteGlow: 0.24, novaSize: 12, blueRing: 6, ringRadius: 0.49, ringWidth: 0.014, shimmer: true, shimmerFreq: 12, shimmerSpeed: 3.5, shimmerDepth: 0.12, rimStart: 0.578, rimTangential: 0.6, rimInward: 0, rimFreq1: 2, rimFreq2: 1, blueColor: [0 / 255, 157 / 255, 255 / 255], rimLine: 1.4, rimLinePos: 0.488, rimLineWidth: 0.003, samples: 16 };
   const AUTO = { speed: 34, resumeAfterMs: 2500 }; // px/s idle drift; resumes this long after the last wheel/drag
 const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 1.0, stagger: 0.07, fromBelow: 0.9, growDelay: 0.25, growDuration: 2.15, growStagger: 0.085, lensBloom: 1.4 };
-  const PAGE_BG = [0xF4 / 255, 0xF4 / 255, 0xF0 / 255]; // SketchDeck N1: the framebuffer gaps blend into the page
+  const PAGE_BG = [0x0E / 255, 0x0E / 255, 0x0E / 255]; // page dark grey: the framebuffer gaps blend into the page
   const ASPECT = 16 / 9;
 
   const gl = canvas.getContext("webgl2", { antialias: true, alpha: false }) || canvas.getContext("webgl", { antialias: true, alpha: false });
@@ -179,7 +179,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     panelH = Math.round(Math.min(H * 0.5, W * 0.22)); // panels about half the strip tall, as in the original
     // scale the (65°-tilted) ellipse so its rim reaches ~98% of the half-width: the bend happens near the screen edges
     const extent = Math.sqrt(Math.pow(0.565 * Math.cos(LENS.rotation * Math.PI / 180), 2) + Math.pow(1 * Math.sin(LENS.rotation * Math.PI / 180), 2));
-    const k = ((W / H) * 0.5 * 0.98) / extent;
+    const k = ((W / H) * 0.5 * 1.08) / extent; // rim sits just past the screen edge, bending only the outermost panels
     LENS.sizeX = 0.565 * k; LENS.sizeY = 1 * k;
     recomputeTotal();
   }
