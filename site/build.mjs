@@ -115,6 +115,7 @@ ${sidebar(base)}
   <h1 class="headline">${esc(site.headline)}</h1>
   <div class="strip" id="strip" aria-label="Selected work">
     <canvas class="liquid" id="liquid" aria-hidden="true"></canvas>
+    <div class="strip-tint" aria-hidden="true"></div>
     <div class="ring" id="ring" aria-hidden="false">${projects.map(card).join("")}</div>
   </div>
 </main>
