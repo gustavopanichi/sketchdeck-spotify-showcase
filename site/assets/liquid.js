@@ -19,10 +19,10 @@
   // ---- config (mirrors lib/carousel/config.js of the original) ----
   const CONFIG = { PANEL_H: 450, GAP: 12, EASE: 0.09, WHEEL: 1.4, DRAG: 1.6, FRICTION: 0.865, SNAP: true, SNAP_IDLE_MS: 120, SNAP_EASE: 0.05, SHRINK_MAX: 60, SHRINK_ATTACK: 0.25, SHRINK_DECAY: 0.06 };
   const INTERACT = { CLICK_SLOP: 6, FLICK_IDLE_MS: 90, TOUCH_DRAG: 1.0, TOUCH_EASE: 0.22, TOUCH_CLICK_SLOP: 12 };
-  const LENS = { rotation: 65, sizeX: 0.565, sizeY: 1, zoom: 0, dispersion: 11, glow: 4.2, whiteGlow: 0.12, novaSize: 12, blueRing: 3, ringRadius: 0.49, ringWidth: 0.014, shimmer: true, shimmerFreq: 12, shimmerSpeed: 3.5, shimmerDepth: 0.12, rimStart: 0.62, rimTangential: 0.46, rimInward: 0, rimFreq1: 2, rimFreq2: 1, blueColor: [0 / 255, 157 / 255, 255 / 255], rimLine: 1.2, rimLinePos: 0.488, rimLineWidth: 0.003, samples: 16 }; // the original demo values, with nova/ring eased for a dark page
+  const LENS = { rotation: 65, sizeX: 0.565, sizeY: 1, zoom: 0, dispersion: 11, glow: 4.2, whiteGlow: 0.24, novaSize: 12, blueRing: 6, ringRadius: 0.49, ringWidth: 0.014, shimmer: true, shimmerFreq: 12, shimmerSpeed: 3.5, shimmerDepth: 0.12, rimStart: 0.578, rimTangential: 0.6, rimInward: 0, rimFreq1: 2, rimFreq2: 1, blueColor: [0 / 255, 157 / 255, 255 / 255], rimLine: 1.4, rimLinePos: 0.488, rimLineWidth: 0.003, samples: 16 }; // verbatim from the original repo
   const AUTO = { speed: 34, resumeAfterMs: 2500 }; // px/s idle drift; resumes this long after the last wheel/drag
 const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 1.0, stagger: 0.07, fromBelow: 0.9, growDelay: 0.25, growDuration: 2.15, growStagger: 0.085, lensBloom: 1.4 };
-  const PAGE_BG = [0x0E / 255, 0x0E / 255, 0x0E / 255]; // page dark grey: the framebuffer gaps blend into the page
+  const PAGE_BG = [1, 1, 1]; // white, as the original
   const ASPECT = 16 / 9;
 
   const gl = canvas.getContext("webgl2", { antialias: true, alpha: false }) || canvas.getContext("webgl", { antialias: true, alpha: false });
@@ -83,19 +83,15 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
       vec2  dispDir = offset * uDispersion * 0.004 * rimMask;
       vec3 col = vec3(0.0);
       vec3 caW = vec3(0.0);
-      float alpha = 0.0;
       for (int i = 0; i < MAX_SAMPLES; i++) {
         float t = float(i) / float(MAX_SAMPLES - 1);
         vec2 sUV = baseUV + dispDir * (t - 0.5);
-        vec4 s = texture2D(uTex, sUV);
-        if (sUV.x < 0.0 || sUV.x > 1.0 || sUV.y < 0.0 || sUV.y > 1.0) s = vec4(0.0);
+        vec3 s = texture2D(uTex, sUV).rgb;
         vec3 w = vec3(exp(-pow((t - 0.00) / 0.38, 2.0)), exp(-pow((t - 0.50) / 0.38, 2.0)), exp(-pow((t - 1.00) / 0.38, 2.0)));
-        col += s.rgb * w; caW += w; alpha += s.a;
+        col += s * w; caW += w;
       }
       col /= max(caW, vec3(0.001));
-      alpha /= float(MAX_SAMPLES);
-      // as in the original: where the rim drags in empty space, the page colour follows the curve
-      col = mix(uPageBg, col, alpha);
+      col *= mix(0.91, 1.0, smoothstep(0.0, 0.38, shapeND));
       float r2 = shapeND * shapeND * 0.25;
       float gs = max(uNovaSize * uGlow * 0.003, 0.004);
       float nova = exp(-r2 / gs) + exp(-r2 / (gs * 7.0)) * 0.18;
@@ -107,7 +103,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
       float edge = softA * (1.0 - softA) * 4.0;
       float facing = 0.5 + 0.5 * dot(radialDir, normalize(vec2(-0.6, 1.0)));
       col += (vec3(1.0) * 0.9 + uBlueColor * 0.35) * edge * rimStrength * (0.55 + 0.45 * facing) * 1.1;
-      col += vec3(nova) * alpha;
+      col += vec3(nova);
       float dC = shapeND * 0.5;
       float tR = clamp(uRingRadius, 0.1, 0.49);
       float rW = max(uRingWidth, 0.003);
@@ -115,14 +111,13 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
       ring *= uBlueRing * (uGlow / 17.0) * 1.8;
       if (uShimmer > 0.5) ring *= sin(angle * uShimmerFreq + uTime * uShimmerSpeed) * uShimmerDepth + (1.0 - uShimmerDepth);
       float ringAura = exp(-pow((dC - tR) / (rW * 6.0), 2.0)) * 0.28 * uBlueRing * (uGlow / 17.0);
-      col += uBlueColor * (ring + ringAura) * alpha;
-      col += vec3(exp(-pow((dC - uRimLinePos) / max(uRimLineWidth, 0.0001), 2.0)) * uRimLine) * alpha;
+      col += uBlueColor * (ring + ringAura);
+      col += vec3(exp(-pow((dC - uRimLinePos) / max(uRimLineWidth, 0.0001), 2.0)) * uRimLine);
       outA = smoothstep(1.0, 0.93, maskND);
       return col;
     }
     void main(){
-      vec4 b = texture2D(uTex, vUv);
-      vec3 base = mix(uPageBg, b.rgb, b.a);
+      vec3 base = texture2D(uTex, vUv).rgb;
       float a = 0.0;
       vec3 c = discLens(uCenter, uAspect, a);
       gl_FragColor = vec4(mix(base, c, a), 1.0);
@@ -170,7 +165,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
   function makeFbo(w, h) {
     if (fbo) { gl.deleteFramebuffer(fbo); gl.deleteTexture(fboTex); }
     fboTex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, fboTex);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, w, h, 0, gl.RGB, gl.UNSIGNED_BYTE, null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     fbo = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
@@ -185,11 +180,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     canvas.style.width = W + "px"; canvas.style.height = H + "px";
     makeFbo(canvas.width, canvas.height);
     panelH = Math.round(Math.min(H * 0.62, W * 0.26)); // large panels, about three across, as in the original
-    // scale the (65°-tilted) ellipse so its rim reaches ~98% of the half-width: the bend happens near the screen edges
-    const extent = Math.sqrt(Math.pow(0.565 * Math.cos(LENS.rotation * Math.PI / 180), 2) + Math.pow(1 * Math.sin(LENS.rotation * Math.PI / 180), 2));
-    const k = ((W / H) * 0.5 * 1.45) / extent; // ellipse well past the edges: its rim band covers the edge panels top to bottom
-    LENS.k = k;
-    LENS.sizeX = 0.565 * k; LENS.sizeY = 1 * k;
+    LENS.k = 1; // original lens size: no viewport scaling
     recomputeTotal();
   }
 
@@ -396,7 +387,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
   function drawPanels() {
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clearColor(PAGE_BG[0], PAGE_BG[1], PAGE_BG[2], 1); gl.clear(gl.COLOR_BUFFER_BIT);
     gl.useProgram(panelProg);
     gl.bindBuffer(gl.ARRAY_BUFFER, quad); gl.enableVertexAttribArray(panelA); gl.vertexAttribPointer(panelA, 2, gl.FLOAT, false, 0, 0);
     gl.uniform2f(PU.uRes, canvas.width, canvas.height);
@@ -429,7 +420,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     gl.uniform1f(LU.uRimLine, LENS.rimLine * fx); gl.uniform1f(LU.uRimLinePos, LENS.rimLinePos); gl.uniform1f(LU.uRimLineWidth, LENS.rimLineWidth);
     gl.uniform1f(LU.uRotation, LENS.rotation * Math.PI / 180);
     gl.uniform3f(LU.uPageBg, PAGE_BG[0], PAGE_BG[1], PAGE_BG[2]);
-    gl.uniform1f(LU.uRimScale, (0.565 + 1) * 0.5 * (LENS.k || 1));
+    gl.uniform1f(LU.uRimScale, (0.565 + 1) * 0.5);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 

@@ -28,7 +28,7 @@ The two long films are about 100 MB each; if the host caps file size, move them 
 - Logos: `assets/img/ui/halfpipe.png` (SketchDeck) and `assets/img/ui/spotify.png`.
 - Home page: the liquid-glass carousel (`assets/liquid.js`, plain WebGL). Config objects at the top of the file mirror the original project: `CONFIG` (panel height, gap, scroll ease, snap), `LENS` (shape, dispersion, ring, glow, border line) and `ENTRY` (rise/grow animation). Cards are 16:9 (`card.jpg`, cut from the same source as `hero.jpg`). Projects in `cardVideos` (data.mjs) play a looping clip. Earlier carousels (`orbit.js`, `carousel.js`, `carousel3d.js`) are kept but unused.
 - The stats drawer opens from the notch attached to the top edge and slides down; its content is `stats` and `teams` in `data.mjs`.
-- Styling: dark grey (#0E0E0E) page with white type set in Spotify Mix (embedded woff2), SketchDeck Blue Moon / White Rabbit for the notch and stats drawer. Tokens sit at the top of `assets/style.css`.
+- Styling: white page with Blue Moon type set in Spotify Mix (embedded woff2); the notch and stats drawer are Blue Moon surfaces. The home carousel lens is the original repo's shader and config, unmodified. Tokens sit at the top of `assets/style.css`.
 - Every project has a square `card.jpg` (strip thumbnail) and a 16:9 `hero.jpg` cut from the same source; regenerate both together if you swap the source image.
 
 ## Asset pipeline (optional)
