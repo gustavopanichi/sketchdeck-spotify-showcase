@@ -30,6 +30,7 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 html { -webkit-text-size-adjust: 100%; background: var(--page); min-height: 100%; }
+.home { background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 66%, var(--sd-ice-ice-baby) 100%) fixed; }
 body { font-family: var(--font-body); font-weight: 400; color: var(--ink); background: transparent; line-height: 1.45; -webkit-font-smoothing: antialiased; }
 h1, h2, h3 { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; }
 img, video { display: block; max-width: 100%; height: auto; }
@@ -59,6 +60,13 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .menu-dots { display: grid; grid-template-columns: repeat(3, 4px); gap: 4px; }
 .menu-dots i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; display: block; }
 .menu-open .notch { opacity: 0; pointer-events: none; }
+.notch-bottom { top: auto; bottom: 3vh; width: 48px; height: 48px; border-radius: 0; background: transparent; color: var(--sd-blue-moon); }
+.notch-bottom:hover { width: 48px; height: 48px; transform: translateX(-50%) scale(1.15); }
+.notch-bottom .menu-dots { grid-template-columns: repeat(3, 7px); gap: 7px; }
+.notch-bottom .menu-dots i { width: 7px; height: 7px; }
+.home .drawer { top: auto; bottom: 0; border-radius: 12px 12px 0 0; transform: translateY(104%); }
+.home.menu-open .drawer { transform: none; }
+.home .drawer-close { bottom: auto; top: 0; transform: translateX(-50%) translateY(-100%); border-radius: var(--radius) var(--radius) 0 0; }
 
 /* drawer: slides down from the top edge, above everything else */
 .scrim { position: fixed; inset: 0; z-index: 900; background: rgba(22, 22, 56, 0.45); backdrop-filter: blur(3px); }
@@ -86,19 +94,19 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 /* ---------------------------------------------------------------- home */
 .home { min-height: 100dvh; overflow-x: hidden; }
-.hero { height: 100dvh; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: clamp(8px, 1.5vh, 20px); padding: calc(var(--topbar-h) * 0.8) var(--gutter) 4vh; overflow: hidden; }
+.hero { height: 100dvh; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; gap: clamp(8px, 1.5vh, 20px); padding: 4vh var(--gutter) 10vh; overflow: hidden; }
 .hero-logos, .hero .headline, .hero .sub { flex: 0 0 auto; }
 .hero-logos { display: flex; align-items: center; gap: clamp(14px, 2vw, 26px); }
 .hero-logo { height: clamp(26px, 3.2vw, 42px); width: auto; }
 .hero-logo-sd { height: clamp(24px, 2.9vw, 38px); }
 .hero-x { font-size: clamp(14px, 1.6vw, 20px); line-height: 1; }
 .hero .headline em { font-style: normal; }
-.hero .headline { font-weight: 500; letter-spacing: -0.01em; font-size: clamp(22px, 3vw, 40px); line-height: 1.15; text-align: center; max-width: 22ch; margin: 0; }
+.hero .headline { font-weight: 500; letter-spacing: -0.01em; font-size: clamp(22px, 2.2vw, 36px); line-height: 1.2; text-align: center; max-width: 20ch; margin: 2vh 0 -2vh; position: relative; z-index: 2; }
 .hero .sub { font-size: clamp(15px, 1.2vw, 18px); text-align: center; max-width: 50ch; margin: -8px 0 0; }
 
 /* the liquid carousel: a WebGL strip of 16:9 cards seen through a tilted lens of liquid glass */
 .strip { position: relative; z-index: 1; width: 100vw; flex: 1 1 auto; min-height: 180px; max-height: 820px; overflow: hidden; opacity: 0; transition: opacity .8s ease; }
-.strip-label { position: absolute; left: 50%; top: 6%; transform: translateX(-50%); pointer-events: none; text-align: center; font-size: 16px; line-height: 1.35; color: var(--ink); opacity: 0; transition: opacity .25s ease; white-space: nowrap; }
+.strip-label { position: absolute; left: 50%; top: auto; bottom: 6%; transform: translateX(-50%); pointer-events: none; text-align: center; font-size: 16px; line-height: 1.35; color: var(--ink); opacity: 0; transition: opacity .25s ease; white-space: nowrap; }
 .strip-label b { display: block; font-weight: 500; }
 .strip-label span { display: block; font-weight: 400; }
 .strip-label.show { opacity: 1; }

@@ -39,6 +39,14 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     void main(){ vec2 px = uRect.xy + a * uRect.zw; vec2 clip = px / uRes * 2.0 - 1.0; gl_Position = vec4(clip.x, -clip.y, 0.0, 1.0); vUv = a; }`, `
     precision mediump float; varying vec2 vUv; uniform sampler2D uTex; void main(){ gl_FragColor = vec4(texture2D(uTex, vUv).rgb, 1.0); }`);
 
+  // page gradient inside the framebuffer (same gradient as the page, aligned to the canvas's position in the viewport)
+  const gradProg = program(`
+    attribute vec2 a; varying vec2 vUv; void main(){ vUv = a; gl_Position = vec4(a * 2.0 - 1.0, 0.0, 1.0); }`, `
+    precision mediump float; varying vec2 vUv; uniform float uTop, uH, uVH;
+    void main(){ float y = (uTop + (1.0 - vUv.y) * uH) / uVH; float t = smoothstep(0.66, 1.0, y); gl_FragColor = vec4(mix(vec3(1.0), vec3(192.0/255.0, 216.0/255.0, 1.0), t), 1.0); }`);
+  const GU = { uTop: gl.getUniformLocation(gradProg, "uTop"), uH: gl.getUniformLocation(gradProg, "uH"), uVH: gl.getUniformLocation(gradProg, "uVH") };
+  const gradA = gl.getAttribLocation(gradProg, "a");
+
   // pass 2: the lens, ported line for line from the original fragment shader
   const lensProg = program(`
     attribute vec2 a; varying vec2 vUv; void main(){ vUv = a; gl_Position = vec4(a * 2.0 - 1.0, 0.0, 1.0); }`, `
@@ -390,6 +398,11 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(PAGE_BG[0], PAGE_BG[1], PAGE_BG[2], 1); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.useProgram(gradProg);
+    gl.bindBuffer(gl.ARRAY_BUFFER, quad); gl.enableVertexAttribArray(gradA); gl.vertexAttribPointer(gradA, 2, gl.FLOAT, false, 0, 0);
+    const sr = strip.getBoundingClientRect();
+    gl.uniform1f(GU.uTop, sr.top); gl.uniform1f(GU.uH, sr.height); gl.uniform1f(GU.uVH, innerHeight);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     gl.useProgram(panelProg);
     gl.bindBuffer(gl.ARRAY_BUFFER, quad); gl.enableVertexAttribArray(panelA); gl.vertexAttribPointer(panelA, 2, gl.FLOAT, false, 0, 0);
     gl.uniform2f(PU.uRes, canvas.width, canvas.height);

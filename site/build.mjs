@@ -104,7 +104,7 @@ function home() {
   };
   return `${head(site.title, base)}
 <body class="home">
-<header class="topbar topbar-home">${menuButton}</header>
+<header class="topbar topbar-home">${menuButton.replace('class="notch"', 'class="notch notch-bottom"')}</header>
 ${sidebar(base)}
 <main class="hero">
   <div class="hero-logos" aria-label="SketchDeck and Spotify">
@@ -112,12 +112,11 @@ ${sidebar(base)}
     <span class="hero-x" aria-hidden="true">×</span>
     <img class="hero-logo hero-logo-sp" src="assets/img/ui/spotify.png" alt="Spotify">
   </div>
+  <h1 class="headline">${esc(site.headline)}</h1>
   <div class="strip" id="strip" aria-label="Selected work">
     <canvas class="liquid" id="liquid" aria-hidden="true"></canvas>
     <div class="ring" id="ring" aria-hidden="false">${projects.map(card).join("")}</div>
   </div>
-  <h1 class="headline">${esc(site.headline).replace(/^(Eight years)/, "<em>$1</em>")}</h1>
-  <p class="sub">${esc(site.description)}</p>
 </main>
 <script src="assets/liquid.js?v=${V}" defer></script>
 <script src="assets/ui.js?v=${V}" defer></script>
