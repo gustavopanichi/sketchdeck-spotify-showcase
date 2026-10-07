@@ -5,21 +5,21 @@ import { site, stats, teams, people, designers, orgFacts, projects, cardVideos }
 const V = Date.now().toString(36); // cache-buster for regenerated thumbnails
 const esc = (s = "") => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-const logos = (base) => `
-  <a class="logos" href="${base}index.html" aria-label="SketchDeck and Spotify, back to all work">
-    <img class="logo logo-sd" src="${base}assets/img/ui/halfpipe.png" alt="SketchDeck" width="40" height="29">
-    <span class="logo-x" aria-hidden="true"></span>
-    <img class="logo logo-sp" src="${base}assets/img/ui/spotify.png" alt="Spotify" width="32" height="32">
-  </a>`;
+const logos = (base, link) => `
+  <${link ? `a href="${base}index.html" aria-label="SketchDeck and Spotify, back to all work"` : 'div'} class="hero-logos">
+    <img class="hero-logo hero-logo-sd" src="${base}assets/img/ui/halfpipe.png" alt="SketchDeck">
+    <span class="hero-x" aria-hidden="true">×</span>
+    <img class="hero-logo hero-logo-sp" src="${base}assets/img/ui/spotify.png" alt="Spotify">
+  </${link ? 'a' : 'div'}>`;
 
 const menuButton = `
-  <button class="notch" id="menuBtn" aria-expanded="false" aria-controls="sidebar" aria-label="Open relationship stats">
+  <button class="dots" id="menuBtn" aria-expanded="false" aria-controls="sidebar" aria-label="Open relationship stats">
     <span class="menu-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
   </button>`;
 
 const categories = [...new Set(projects.map((p) => p.category))];
 
-const sidebar = (base) => `
+const sidebar = () => `
   <div class="scrim" id="scrim" hidden></div>
   <aside class="drawer" id="sidebar" aria-label="SketchDeck and Spotify relationship" aria-hidden="true">
     <div class="drawer-inner">
@@ -58,12 +58,8 @@ const head = (title, base, extra = "") => `<!doctype html>
 ${extra}
 </head>`;
 
-const header = (base, extraLeft = "") => `
-<header class="topbar">
-  <div class="topbar-left">${logos(base)}${extraLeft}</div>
-  ${menuButton}
-</header>
-${sidebar(base)}`;
+const header = () => `${menuButton}
+${sidebar()}`;
 
 // ---------------------------------------------------------------- shared blocks
 const phone = (inner, bg = "#121212", extra = "") => `
@@ -104,14 +100,9 @@ function home() {
   };
   return `${head(site.title, base)}
 <body class="home">
-<header class="topbar topbar-home">${menuButton.replace('class="notch"', 'class="notch notch-bottom"')}</header>
-${sidebar(base)}
+${header()}
 <main class="hero">
-  <div class="hero-logos" aria-label="SketchDeck and Spotify">
-    <img class="hero-logo hero-logo-sd" src="assets/img/ui/halfpipe.png" alt="SketchDeck">
-    <span class="hero-x" aria-hidden="true">×</span>
-    <img class="hero-logo hero-logo-sp" src="assets/img/ui/spotify.png" alt="Spotify">
-  </div>
+  ${logos(base, false)}
   <div class="strip" id="strip" aria-label="Selected work">
     <h1 class="headline">${esc(site.headline)}</h1>
     <canvas class="liquid" id="liquid" aria-hidden="true"></canvas>
@@ -145,8 +136,9 @@ function caseStudy(p) {
 
   return `${head(`${p.title} — ${site.title}`, base)}
 <body class="case">
-${header(base, `<a class="back" href="${base}index.html">All work</a>`)}
-<main>
+${header()}
+<main class="page">
+  ${logos(base, true)}
   ${hero}
   <section class="case-head">
     <p class="eyebrow">${esc(p.category)}${p.year ? ` · ${esc(p.year)}` : ""}</p>
@@ -187,8 +179,9 @@ function illustration(p) {
   }
   return `${head(`${p.title} — ${site.title}`, base, `<style>body{--tint:${p.bg}}</style>`)}
 <body class="ill ${isInfographic ? "infographic" : ""}">
-${header(base, `<a class="back" href="${base}index.html">All work</a>`)}
-<main>
+${header()}
+<main class="page">
+  ${logos(base, true)}
   ${frame}
   <section class="case-head">
     <p class="eyebrow">${esc(p.category)}${p.year ? ` · ${esc(p.year)}` : ""}</p>
@@ -207,8 +200,9 @@ function video(p) {
   const base = "../";
   return `${head(`${p.title} — ${site.title}`, base)}
 <body class="vid">
-${header(base, `<a class="back" href="${base}index.html">All work</a>`)}
-<main>
+${header()}
+<main class="page">
+  ${logos(base, true)}
   <div class="frame frame-video"><video class="player" src="${base}assets/video/${p.video}" poster="${base}assets/img/${p.slug}/${p.poster}" controls playsinline preload="metadata"></video></div>
   <section class="case-head">
     <p class="eyebrow">${esc(p.category)}${p.year ? ` · ${esc(p.year)}` : ""}</p>

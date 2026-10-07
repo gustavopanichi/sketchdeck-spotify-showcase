@@ -361,11 +361,14 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
   ring.addEventListener("click", (e) => { const a = e.target.closest(".card"); if (!a) return; e.preventDefault(); expand(a, frameRect()); });
 
   // ---- expand into the case-study frame ----
+  // where the case page's hero frame will sit: directly under the (fixed-position) logos, which stay put between pages
   function frameRect() {
     const cs = getComputedStyle(document.documentElement);
-    const gutter = parseFloat(cs.getPropertyValue("--gutter")) || 24, topbar = parseFloat(cs.getPropertyValue("--topbar-h")) || 84;
+    const gutter = parseFloat(cs.getPropertyValue("--gutter")) || 24;
+    const lg = document.querySelector(".hero-logos");
+    const top = lg ? lg.getBoundingClientRect().bottom + 24 : 84;
     const w = innerWidth - gutter * 2;
-    return { left: gutter, top: topbar, width: w, height: Math.min(w * 9 / 16, innerHeight * 0.82) };
+    return { left: gutter, top, width: w, height: Math.min(w * 9 / 16, innerHeight * 0.82) };
   }
   function expand(card, r) {
     if (frozen) return;
