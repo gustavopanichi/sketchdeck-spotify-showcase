@@ -4,6 +4,7 @@
 !/.gitignore
 !/.github/
 !/README.md
+!/vercel.json
 !/site/
 !/tools/
 .DS_Store
