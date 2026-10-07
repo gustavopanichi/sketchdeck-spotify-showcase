@@ -19,7 +19,7 @@
   // ---- config (mirrors lib/carousel/config.js of the original) ----
   const CONFIG = { PANEL_H: 450, GAP: 12, EASE: 0.09, WHEEL: 1.4, DRAG: 1.6, FRICTION: 0.865, SNAP: true, SNAP_IDLE_MS: 120, SNAP_EASE: 0.05, SHRINK_MAX: 60, SHRINK_ATTACK: 0.25, SHRINK_DECAY: 0.06 };
   const INTERACT = { CLICK_SLOP: 6, FLICK_IDLE_MS: 90, TOUCH_DRAG: 1.0, TOUCH_EASE: 0.22, TOUCH_CLICK_SLOP: 12 };
-  const LENS = { rotation: 10, sizeX: 0.0 /* set from aspect in measure() */, sizeY: 0.95, zoom: 0, dispersion: 11, glow: 4.2, whiteGlow: 0.24, novaSize: 12, blueRing: 6, ringRadius: 0.49, ringWidth: 0.014, shimmer: true, shimmerFreq: 12, shimmerSpeed: 3.5, shimmerDepth: 0.12, rimStart: 0.578, rimTangential: 0.6, rimInward: 0, rimFreq1: 2, rimFreq2: 1, blueColor: [0 / 255, 157 / 255, 255 / 255], rimLine: 1.4, rimLinePos: 0.488, rimLineWidth: 0.003, samples: 16 };
+  const LENS = { rotation: 65, sizeX: 0.565, sizeY: 1, zoom: 0, dispersion: 11, glow: 4.2, whiteGlow: 0.24, novaSize: 12, blueRing: 6, ringRadius: 0.49, ringWidth: 0.014, shimmer: true, shimmerFreq: 12, shimmerSpeed: 3.5, shimmerDepth: 0.12, rimStart: 0.578, rimTangential: 0.6, rimInward: 0, rimFreq1: 2, rimFreq2: 1, blueColor: [0 / 255, 157 / 255, 255 / 255], rimLine: 1.4, rimLinePos: 0.488, rimLineWidth: 0.003, samples: 16 };
   const AUTO = { speed: 34, resumeAfterMs: 2500 }; // px/s idle drift; resumes this long after the last wheel/drag
 const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 1.0, stagger: 0.07, fromBelow: 0.9, growDelay: 0.25, growDuration: 2.15, growStagger: 0.085, lensBloom: 1.4 };
   const PAGE_BG = [0x16 / 255, 0x16 / 255, 0x38 / 255]; // Blue Moon: the framebuffer gaps blend into the page
@@ -93,7 +93,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
       col /= max(caW, vec3(0.001));
       alpha /= float(MAX_SAMPLES);
       col = mix(uPageBg, col, alpha);
-      col = mix(uPageBg, col * mix(0.91, 1.0, smoothstep(0.0, 0.38, shapeND)), alpha);
+      col = mix(uPageBg, col, alpha);
       float r2 = shapeND * shapeND * 0.25;
       float gs = max(uNovaSize * uGlow * 0.003, 0.004);
       float nova = exp(-r2 / gs) + exp(-r2 / (gs * 7.0)) * 0.18;
@@ -175,8 +175,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
     canvas.style.width = W + "px"; canvas.style.height = H + "px";
     makeFbo(canvas.width, canvas.height);
-    panelH = Math.round(Math.min(H * 0.5, W * 0.17)); // ~3 panels across
-    LENS.sizeX = (W / H) * 0.5; // half-width in height units: the rim sits at the strip edges
+    panelH = Math.round(Math.min(H * 0.5, W * 0.22)); // panels about half the strip tall, as in the original
     recomputeTotal();
   }
 
