@@ -94,10 +94,8 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
       }
       col /= max(caW, vec3(0.001));
       alpha /= float(MAX_SAMPLES);
-      vec4 b0 = texture2D(uTex, vUv);
-      vec3 under = mix(uPageBg, b0.rgb, b0.a);
-      col = mix(under, col, alpha);
-      alpha = max(alpha, b0.a);
+      // as in the original: where the rim drags in empty space, the page colour follows the curve
+      col = mix(uPageBg, col, alpha);
       float r2 = shapeND * shapeND * 0.25;
       float gs = max(uNovaSize * uGlow * 0.003, 0.004);
       float nova = exp(-r2 / gs) + exp(-r2 / (gs * 7.0)) * 0.18;
