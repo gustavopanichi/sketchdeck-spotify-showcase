@@ -114,14 +114,13 @@ ${sidebar(base)}
     <img class="hero-logo hero-logo-sp" src="assets/img/ui/spotify.png" alt="Spotify">
   </div>
   <div class="strip" id="strip" aria-label="Selected work">
-    <div class="scene"><div class="ring" id="ring">${projects.map(card).join("")}</div></div>
-    <div class="vignette-blur" aria-hidden="true"></div>
-    <div class="vignette-dark" aria-hidden="true"></div>
+    <canvas class="liquid" id="liquid" aria-hidden="true"></canvas>
+    <div class="ring" id="ring" aria-hidden="false">${projects.map(card).join("")}</div>
   </div>
   <h1 class="headline">${esc(site.headline).replace(/^(Eight years)/, "<em>$1</em>")}</h1>
   <p class="sub">${esc(site.description)}</p>
 </main>
-<script src="assets/carousel3d.js" defer></script>
+<script src="assets/liquid.js" defer></script>
 <script src="assets/ui.js" defer></script>
 </body>
 </html>`;

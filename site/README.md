@@ -26,7 +26,7 @@ The two long films are about 100 MB each; if the host caps file size, move them 
 ## Notes
 - Fonts: Spotify Mix (woff2) is embedded from `assets/fonts/`.
 - Logos: `assets/img/ui/halfpipe.png` (SketchDeck) and `assets/img/ui/spotify.png`.
-- Home page: a 3D ring of project cards seen from its centre (CSS 3D, `assets/carousel3d.js`). The ring turns once every `PERIOD` seconds; cards blur and fade past `FADE_FROM`/`VISIBLE` degrees, and the strip edges are blurred by a backdrop-filter vignette. Projects listed in `cardVideos` (data.mjs) show a looping clip instead of a still. The earlier centre-out strip is kept in `assets/carousel.js`, unused.
+- Home page: the liquid-glass carousel (`assets/liquid.js`, plain WebGL). Config objects at the top of the file mirror the original project: `CONFIG` (panel height, gap, scroll ease, snap), `LENS` (shape, dispersion, ring, glow, border line) and `ENTRY` (rise/grow animation). Cards are 16:9 (`card.jpg`, cut from the same source as `hero.jpg`). Projects in `cardVideos` (data.mjs) play a looping clip. Earlier carousels (`orbit.js`, `carousel.js`, `carousel3d.js`) are kept but unused.
 - The stats drawer opens from the notch attached to the top edge and slides down; its content is `stats` and `teams` in `data.mjs`.
 - Styling follows the SketchDeck brand: Blue Moon background, White Rabbit type, Syne (uppercase) for headings and Inter for body, loaded from Google Fonts. Tokens sit at the top of `assets/style.css`. Client colours appear only inside case-study imagery.
 - Every project has a square `card.jpg` (strip thumbnail) and a 16:9 `hero.jpg` cut from the same source; regenerate both together if you swap the source image.
@@ -36,3 +36,8 @@ The two long films are about 100 MB each; if the host caps file size, move them 
 (PDF page rendering, embedded-image extraction, auto-cropping, thumbnail fitting, video re-encoding). They were built
 with the macOS command-line tools only (`swiftc`), since ffmpeg/ImageMagick are not installed. `assets2.sh` is the
 current pipeline; its paths point at a scratch directory, so adjust `S=` before re-running.
+
+## Credits
+The home carousel is a plain-WebGL port of [liquid-glass-carousel](https://github.com/Yousuf-developer/liquid-glass-carousel)
+by Yousuf-developer (MIT). The lens shader and the scroll/snap/entry behaviour follow that project; the click action
+was changed to open our case studies.

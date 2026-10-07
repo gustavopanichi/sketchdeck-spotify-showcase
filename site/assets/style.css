@@ -89,32 +89,22 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .hero .headline { font-size: clamp(22px, 3vw, 40px); line-height: 1.15; text-align: center; max-width: 22ch; margin: 0; }
 .hero .sub { font-size: clamp(15px, 1.2vw, 18px); text-align: center; max-width: 50ch; margin: -8px 0 0; }
 
-/* the carousel: a ring of cards seen from its centre, edges dissolving into a blurred vignette */
-.strip { position: relative; z-index: 1; width: 100vw; height: clamp(260px, 50vh, 560px); overflow: hidden; opacity: 0; transition: opacity .8s ease; }
+/* the liquid carousel: a WebGL strip of 16:9 cards seen through a tilted lens of liquid glass */
+.strip { position: relative; z-index: 1; width: 100vw; height: clamp(260px, 52vh, 600px); overflow: hidden; opacity: 0; transition: opacity .8s ease; }
 .strip.ready { opacity: 1; }
-.scene { position: absolute; inset: 0; perspective: var(--p, 1000px); perspective-origin: 50% 50%; }
-.ring { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; will-change: transform; }
-.card {
-  position: absolute; left: 0; top: 0; display: block; cursor: pointer; overflow: hidden;
-  border-radius: 16px; background: var(--sd-blue-moon);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.10), 0 30px 60px rgba(0, 0, 0, 0.45);
-  backface-visibility: hidden; -webkit-backface-visibility: hidden;
-  transform-style: preserve-3d; will-change: transform, filter, opacity;
-  transition: opacity .35s ease, filter .35s ease;
-}
-.card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18); pointer-events: none; }
-.card img, .card video { width: 100%; height: 100%; object-fit: cover; display: block; }
-.card:hover img, .card:hover video { filter: brightness(1.05); }
-/* lens vignette: the edges of the strip blur and darken, as if the sides of the screen were out of focus */
-.vignette-blur { position: absolute; inset: 0; pointer-events: none; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-  -webkit-mask-image: linear-gradient(90deg, #000 0%, rgba(0,0,0,.9) 10%, transparent 34%, transparent 66%, rgba(0,0,0,.9) 90%, #000 100%);
-  mask-image: linear-gradient(90deg, #000 0%, rgba(0,0,0,.9) 10%, transparent 34%, transparent 66%, rgba(0,0,0,.9) 90%, #000 100%); }
-.vignette-dark { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(0,0,0,.7) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 70%, rgba(0,0,0,.7) 100%);
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 70%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 70%, transparent 100%); }
-.expanding .card, .expanding .hero-logos, .expanding .hero .headline, .expanding .hero .sub { opacity: 0 !important; transition: opacity .45s ease; }
-@media (max-width: 700px) { .strip { height: 40vh; } }
+.liquid { position: absolute; inset: 0; display: block; width: 100%; height: 100%; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+/* the real links live in a visually hidden list (keyboard and screen readers); the canvas is the picture */
+.ring { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+.card { display: inline-block; }
+.card img, .card video { width: 1px; height: 1px; }
+.strip.no-webgl .liquid { display: none; }
+.strip.no-webgl .ring { position: static; width: auto; height: auto; clip: auto; clip-path: none; display: flex; gap: 12px; padding: 24px var(--gutter); overflow-x: auto; }
+.strip.no-webgl .card { flex: 0 0 auto; width: 30vw; border-radius: 6px; overflow: hidden; }
+.strip.no-webgl .card img, .strip.no-webgl .card video { width: 100%; height: auto; }
+.expanding .hero-logos, .expanding .hero .headline, .expanding .hero .sub, .expanding .liquid { opacity: 0 !important; transition: opacity .45s ease; }
+@media (max-width: 700px) { .strip { height: 34vh; } }
 
-.morph { position: fixed; z-index: 400; overflow: hidden; border-radius: 10px; background: var(--sd-blue-moon); pointer-events: none; will-change: transform, width, height, border-radius; }
+.morph { position: fixed; z-index: 400; overflow: hidden; border-radius: 6px; background: var(--sd-blue-moon); pointer-events: none; will-change: transform, width, height, border-radius; }
 .morph img { width: 100%; height: 100%; object-fit: cover; }
 .morph-hero { position: absolute; inset: 0; opacity: 0; transition: opacity .45s ease .15s; }
 .morph-hero.show { opacity: 1; }
