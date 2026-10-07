@@ -175,19 +175,20 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, fboTex, 0);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   }
-  let panelH = CONFIG.PANEL_H;
+  let panelH = CONFIG.PANEL_H, yOff = 0;
   function measure() {
     const r = strip.getBoundingClientRect();
     W = r.width; H = r.height; dpr = Math.min(2, devicePixelRatio || 1);
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
     canvas.style.width = W + "px"; canvas.style.height = H + "px";
     makeFbo(canvas.width, canvas.height);
-    panelH = Math.round(Math.min(H * 0.46, W * 0.26)); // room above and below so the bent pictures are never clipped by the canvas
+    panelH = Math.round(Math.min(H * 0.37, W * 0.16)); // reference proportions: panels ~30% of the viewport tall, ~28% wide
+    yOff = innerHeight * 0.038; // panels sit a little below the viewport centre, as in the reference
     // the demo mounts full-screen, so its lens is sized against the viewport height; our strip is shorter, so scale up to match
     LENS.k = innerHeight / H;
     LENS.sizeX = 0.565 * LENS.k; LENS.sizeY = 1 * LENS.k;
-    // pull the headline down so it sits just above the panels whatever the strip height
-    const hl = document.querySelector(".hero .headline"); if (hl) hl.style.marginBottom = -Math.max(0, (H - panelH) / 2 - 22) + "px";
+    // headline hugs the top edge of the panels; the label (below) hugs their bottom edge
+    const hl = strip.querySelector(".headline"); if (hl) hl.style.bottom = (H / 2 - yOff + panelH / 2 + 22).toFixed(1) + "px";
     recomputeTotal();
   }
 
@@ -282,7 +283,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
         const below = H * ENTRY.fromBelow;
         finalY = below * (1 - pe);
       }
-      const sx = finalX + half, sy = H / 2 + finalY;
+      const sx = finalX + half, sy = H / 2 + yOff + finalY;
       panelRects.push({ left: sx - finalW / 2, top: sy - finalH / 2, w: finalW, h: finalH, srcIndex: i, centerX: finalX });
       if (!inEntry && Math.abs(finalX) < centeredDist) { centeredDist = Math.abs(finalX); centeredPanel = { srcIndex: i, centerX: finalX }; }
     }
@@ -327,7 +328,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
       const [title, cat] = sources[hit.srcIndex].a.getAttribute("aria-label").split(",").map((t) => t.trim());
       const html = `<b>${title}</b><span>${cat}</span>`;
       if (label.innerHTML !== html) label.innerHTML = html;
-      label.style.top = (H / 2 + panelH / 2 + 14).toFixed(1) + "px"; // just under the (unshrunk) panels
+      label.style.top = (H / 2 + yOff + panelH / 2 + 14).toFixed(1) + "px"; // just under the (unshrunk) panels
       label.classList.add("show");
     } else label.classList.remove("show");
   }

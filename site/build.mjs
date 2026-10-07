@@ -112,8 +112,8 @@ ${sidebar(base)}
     <span class="hero-x" aria-hidden="true">×</span>
     <img class="hero-logo hero-logo-sp" src="assets/img/ui/spotify.png" alt="Spotify">
   </div>
-  <h1 class="headline">${esc(site.headline)}</h1>
   <div class="strip" id="strip" aria-label="Selected work">
+    <h1 class="headline">${esc(site.headline)}</h1>
     <canvas class="liquid" id="liquid" aria-hidden="true"></canvas>
     <div class="ring" id="ring" aria-hidden="false">${projects.map(card).join("")}</div>
   </div>
