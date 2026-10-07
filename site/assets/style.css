@@ -214,3 +214,11 @@ main.page { padding: 0 var(--gutter) 14vh; }
   .drawer, .morph, .dots .menu-dots i { transition: none; }
   .anim-in main > * { animation: none; }
 }
+
+/* ---------------------------------------------------------------- custom cursor: 3 × 3 px dot, black on light, white on dark */
+.has-dot-cursor, .has-dot-cursor * { cursor: none !important; }
+.cursor-dot { position: fixed; left: 0; top: 0; width: 3px; height: 3px; border-radius: 50%; background: #FFFFFF; mix-blend-mode: difference; pointer-events: none; z-index: 2000; opacity: 0; transition: opacity .2s ease, width .18s cubic-bezier(.2,.8,.2,1), height .18s cubic-bezier(.2,.8,.2,1); will-change: transform; }
+.cursor-dot.big { width: 7px; height: 7px; }
+.cursor-dot.show { opacity: 1; }
+.cursor-dot.down { width: 5px; height: 5px; }
+@media (prefers-reduced-motion: reduce) { .cursor-dot { transition: opacity .2s ease; } }

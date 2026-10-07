@@ -21,3 +21,29 @@
   scrim.addEventListener("click", () => set(false));
   addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("menu-open")) set(false); });
 })();
+
+// Custom cursor: a 3 × 3 px dot. It is drawn white with difference blending, so it reads black over the white page
+// and white over dark imagery (and stays visible over colour). Only for fine pointers; touch devices are untouched.
+(() => {
+  if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+  const dot = document.createElement("div");
+  dot.className = "cursor-dot";
+  dot.setAttribute("aria-hidden", "true");
+  document.body.appendChild(dot);
+  document.documentElement.classList.add("has-dot-cursor");
+  let x = -100, y = -100, shown = false, big = false;
+  const interactive = (el) => !!el && (!!el.closest("a, button, [role=button], label, input, select, textarea, video") || /grab|pointer/.test(el.style.cursor || ""));
+  function paint() { dot.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`; dot.classList.toggle("big", big); }
+  addEventListener("pointermove", (e) => {
+    if (e.pointerType && e.pointerType !== "mouse") return;
+    x = e.clientX; y = e.clientY;
+    if (!shown) { shown = true; dot.classList.add("show"); }
+    big = interactive(document.elementFromPoint(x, y));
+    paint();
+  }, { passive: true });
+  addEventListener("pointerdown", () => { dot.classList.add("down"); });
+  addEventListener("pointerup", () => { dot.classList.remove("down"); });
+  document.addEventListener("mouseleave", () => { shown = false; dot.classList.remove("show"); });
+  document.addEventListener("mouseenter", () => { shown = true; dot.classList.add("show"); });
+  addEventListener("blur", () => { shown = false; dot.classList.remove("show"); });
+})();
