@@ -106,12 +106,26 @@
       location.href = card.href;
     };
   }
-  ring.addEventListener("click", (e) => {
-    const card = e.target.closest(".card");
-    if (!card || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+  // Chrome's hit-testing does not reach cards inside this 3D ring, so clicks are resolved from the cards'
+  // projected bounding boxes instead: the nearest (largest) visible card under the pointer wins.
+  function cardAt(x, y) {
+    let best = null, bestW = 0;
+    for (const c of cards) {
+      if (c._state === -1 || c.style.pointerEvents === "none") continue;
+      const r = c.getBoundingClientRect();
+      if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom && r.width > bestW) { best = c; bestW = r.width; }
+    }
+    return best;
+  }
+  const scene = strip.querySelector(".scene");
+  scene.addEventListener("click", (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    const card = cardAt(e.clientX, e.clientY);
+    if (!card) return;
     e.preventDefault();
     expand(card);
   });
+  scene.addEventListener("pointermove", (e) => { scene.style.cursor = cardAt(e.clientX, e.clientY) ? "pointer" : "default"; });
   addEventListener("pageshow", (e) => { if (e.persisted) { frozen = false; document.body.classList.remove("expanding"); document.querySelectorAll(".morph").forEach((n) => n.remove()); } });
 
   addEventListener("resize", measure);
