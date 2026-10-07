@@ -19,8 +19,9 @@
   // ---- config (mirrors lib/carousel/config.js of the original) ----
   const CONFIG = { PANEL_H: 450, GAP: 12, EASE: 0.09, WHEEL: 1.4, DRAG: 1.6, FRICTION: 0.865, SNAP: true, SNAP_IDLE_MS: 120, SNAP_EASE: 0.05, SHRINK_MAX: 60, SHRINK_ATTACK: 0.25, SHRINK_DECAY: 0.06 };
   const INTERACT = { CLICK_SLOP: 6, FLICK_IDLE_MS: 90, TOUCH_DRAG: 1.0, TOUCH_EASE: 0.22, TOUCH_CLICK_SLOP: 12 };
-  const LENS = { rotation: 65, sizeX: 0.565, sizeY: 1, zoom: 0, dispersion: 11, glow: 4.2, whiteGlow: 0.24, novaSize: 12, blueRing: 6, ringRadius: 0.49, ringWidth: 0.014, shimmer: true, shimmerFreq: 12, shimmerSpeed: 3.5, shimmerDepth: 0.12, rimStart: 0.578, rimTangential: 0.6, rimInward: 0, rimFreq1: 2, rimFreq2: 1, blueColor: [0 / 255, 157 / 255, 255 / 255], rimLine: 1.4, rimLinePos: 0.488, rimLineWidth: 0.003, samples: 16 };
-  const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 1.0, stagger: 0.07, fromBelow: 0.9, growDelay: 0.25, growDuration: 2.15, growStagger: 0.085, lensBloom: 1.4 };
+  const LENS = { rotation: 10, sizeX: 0.0 /* set from aspect in measure() */, sizeY: 0.95, zoom: 0, dispersion: 11, glow: 4.2, whiteGlow: 0.24, novaSize: 12, blueRing: 6, ringRadius: 0.49, ringWidth: 0.014, shimmer: true, shimmerFreq: 12, shimmerSpeed: 3.5, shimmerDepth: 0.12, rimStart: 0.578, rimTangential: 0.6, rimInward: 0, rimFreq1: 2, rimFreq2: 1, blueColor: [0 / 255, 157 / 255, 255 / 255], rimLine: 1.4, rimLinePos: 0.488, rimLineWidth: 0.003, samples: 16 };
+  const AUTO = { speed: 34, resumeAfterMs: 2500 }; // px/s idle drift; resumes this long after the last wheel/drag
+const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 1.0, stagger: 0.07, fromBelow: 0.9, growDelay: 0.25, growDuration: 2.15, growStagger: 0.085, lensBloom: 1.4 };
   const PAGE_BG = [0x16 / 255, 0x16 / 255, 0x38 / 255]; // Blue Moon: the framebuffer gaps blend into the page
   const ASPECT = 16 / 9;
 
@@ -36,7 +37,7 @@
   const panelProg = program(`
     attribute vec2 a; uniform vec2 uRes; uniform vec4 uRect; varying vec2 vUv;
     void main(){ vec2 px = uRect.xy + a * uRect.zw; vec2 clip = px / uRes * 2.0 - 1.0; gl_Position = vec4(clip.x, -clip.y, 0.0, 1.0); vUv = a; }`, `
-    precision mediump float; varying vec2 vUv; uniform sampler2D uTex; void main(){ gl_FragColor = texture2D(uTex, vUv); }`);
+    precision mediump float; varying vec2 vUv; uniform sampler2D uTex; void main(){ gl_FragColor = vec4(texture2D(uTex, vUv).rgb, 1.0); }`);
 
   // pass 2: the lens, ported line for line from the original fragment shader
   const lensProg = program(`
@@ -51,6 +52,7 @@
     uniform float uShimmer, uShimmerFreq, uShimmerSpeed, uShimmerDepth, uTime, uRimStart, uRimTangential, uRimInward, uRimFreq1, uRimFreq2;
     uniform vec3  uBlueColor;
     uniform float uRimLine, uRimLinePos, uRimLineWidth, uRotation;
+    uniform vec3  uPageBg;
     const int MAX_SAMPLES = 16;
 
     vec3 discLens(vec2 center, float aspectCorrect, out float outA) {
@@ -80,20 +82,23 @@
       vec2  dispDir = offset * uDispersion * 0.004 * rimMask;
       vec3 col = vec3(0.0);
       vec3 caW = vec3(0.0);
+      float alpha = 0.0;
       for (int i = 0; i < MAX_SAMPLES; i++) {
         float t = float(i) / float(MAX_SAMPLES - 1);
         vec2 sUV = baseUV + dispDir * (t - 0.5);
-        vec3 s = texture2D(uTex, sUV).rgb;
+        vec4 s = texture2D(uTex, sUV);
         vec3 w = vec3(exp(-pow((t - 0.00) / 0.38, 2.0)), exp(-pow((t - 0.50) / 0.38, 2.0)), exp(-pow((t - 1.00) / 0.38, 2.0)));
-        col += s * w; caW += w;
+        col += s.rgb * w; caW += w; alpha += s.a;
       }
       col /= max(caW, vec3(0.001));
-      col *= mix(0.91, 1.0, smoothstep(0.0, 0.38, shapeND));
+      alpha /= float(MAX_SAMPLES);
+      col = mix(uPageBg, col, alpha);
+      col = mix(uPageBg, col * mix(0.91, 1.0, smoothstep(0.0, 0.38, shapeND)), alpha);
       float r2 = shapeND * shapeND * 0.25;
       float gs = max(uNovaSize * uGlow * 0.003, 0.004);
       float nova = exp(-r2 / gs) + exp(-r2 / (gs * 7.0)) * 0.18;
       nova *= uWhiteGlow * (uGlow / 17.0) * 1.15;
-      col += vec3(nova);
+      col += vec3(nova) * alpha;
       float dC = shapeND * 0.5;
       float tR = clamp(uRingRadius, 0.1, 0.49);
       float rW = max(uRingWidth, 0.003);
@@ -101,13 +106,14 @@
       ring *= uBlueRing * (uGlow / 17.0) * 1.8;
       if (uShimmer > 0.5) ring *= sin(angle * uShimmerFreq + uTime * uShimmerSpeed) * uShimmerDepth + (1.0 - uShimmerDepth);
       float ringAura = exp(-pow((dC - tR) / (rW * 6.0), 2.0)) * 0.28 * uBlueRing * (uGlow / 17.0);
-      col += uBlueColor * (ring + ringAura);
-      col += vec3(exp(-pow((dC - uRimLinePos) / max(uRimLineWidth, 0.0001), 2.0)) * uRimLine);
+      col += uBlueColor * (ring + ringAura) * alpha;
+      col += vec3(exp(-pow((dC - uRimLinePos) / max(uRimLineWidth, 0.0001), 2.0)) * uRimLine) * alpha;
       outA = smoothstep(1.0, 0.93, maskND);
       return col;
     }
     void main(){
-      vec3 base = texture2D(uTex, vUv).rgb;
+      vec4 b = texture2D(uTex, vUv);
+      vec3 base = mix(uPageBg, b.rgb, b.a);
       float a = 0.0;
       vec3 c = discLens(uCenter, uAspect, a);
       gl_FragColor = vec4(mix(base, c, a), 1.0);
@@ -117,7 +123,7 @@
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]), gl.STATIC_DRAW);
   const U = (p, names) => Object.fromEntries(names.map((n) => [n, gl.getUniformLocation(p, n)]));
   const PU = U(panelProg, ["uRes", "uRect", "uTex"]);
-  const LU = U(lensProg, ["uTex", "uRes", "uCenter", "uSizeX", "uSizeY", "uAspect", "uZoom", "uDispersion", "uGlow", "uWhiteGlow", "uNovaSize", "uBlueRing", "uRingRadius", "uRingWidth", "uShimmer", "uShimmerFreq", "uShimmerSpeed", "uShimmerDepth", "uTime", "uRimStart", "uRimTangential", "uRimInward", "uRimFreq1", "uRimFreq2", "uBlueColor", "uRimLine", "uRimLinePos", "uRimLineWidth", "uRotation"]);
+  const LU = U(lensProg, ["uTex", "uRes", "uCenter", "uSizeX", "uSizeY", "uAspect", "uZoom", "uDispersion", "uGlow", "uWhiteGlow", "uNovaSize", "uBlueRing", "uRingRadius", "uRingWidth", "uShimmer", "uShimmerFreq", "uShimmerSpeed", "uShimmerDepth", "uTime", "uRimStart", "uRimTangential", "uRimInward", "uRimFreq1", "uRimFreq2", "uBlueColor", "uRimLine", "uRimLinePos", "uRimLineWidth", "uRotation", "uPageBg"]);
   const panelA = gl.getAttribLocation(panelProg, "a"), lensA = gl.getAttribLocation(lensProg, "a");
 
   // ---- textures: one per card; videos re-uploaded every frame ----
@@ -155,7 +161,7 @@
   function makeFbo(w, h) {
     if (fbo) { gl.deleteFramebuffer(fbo); gl.deleteTexture(fboTex); }
     fboTex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, fboTex);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, w, h, 0, gl.RGB, gl.UNSIGNED_BYTE, null);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     fbo = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
@@ -169,7 +175,8 @@
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
     canvas.style.width = W + "px"; canvas.style.height = H + "px";
     makeFbo(canvas.width, canvas.height);
-    panelH = Math.round(Math.min(H * 0.72, W * 0.17)); // ~3 panels across, never taller than 72% of the strip
+    panelH = Math.round(Math.min(H * 0.5, W * 0.17)); // ~3 panels across
+    LENS.sizeX = (W / H) * 0.5; // half-width in height units: the rim sits at the strip edges
     recomputeTotal();
   }
 
@@ -272,6 +279,7 @@
   const panelAt = (px, py) => panelRects.find((r) => px >= r.left && px <= r.left + r.w && py >= r.top && py <= r.top + r.h) || null;
 
   // ---- input (wheel, drag, click) ----
+  let hovering = false, hoverLabel = null;
   let dragging = false, dragPointerId = null, dragLastX = 0, dragDist = 0, dragVel = 0, dragMoveT = 0, suppressClick = false, dragType = "mouse";
   let lastPX = NaN, lastPY = NaN, pointerInside = false, frozen = false;
   const inputLocked = () => frozen || entryActive || entrySettled;
@@ -297,7 +305,20 @@
       target -= dx * sens; dragVel = dragVel * 0.6 + -dx * sens * 0.4; dragMoveT = performance.now(); lastInput = dragMoveT; snapped = false;
     }
     const r = strip.getBoundingClientRect(); lastPX = e.clientX - r.left; lastPY = e.clientY - r.top; pointerInside = true;
+    updateHover();
   });
+  // hover: the strip pauses and the project name appears under the panel
+  const label = document.createElement("div"); label.className = "strip-label"; strip.appendChild(label);
+  function updateHover() {
+    const hit = (pointerInside && !dragging && !inputLocked() && Number.isFinite(lastPX)) ? panelAt(lastPX, lastPY) : null;
+    hovering = !!hit;
+    if (hit) {
+      const title = sources[hit.srcIndex].a.getAttribute("aria-label").split(",")[0];
+      if (label.textContent !== title) label.textContent = title;
+      label.style.transform = `translate(${(hit.left + hit.w / 2).toFixed(1)}px, ${(hit.top + hit.h + 12).toFixed(1)}px) translateX(-50%)`;
+      label.classList.add("show");
+    } else label.classList.remove("show");
+  }
   const endDrag = (e) => {
     if (!dragging || (e && dragPointerId !== null && e.pointerId !== dragPointerId)) return;
     dragging = false; try { canvas.releasePointerCapture(dragPointerId); } catch (_) {} dragPointerId = null;
@@ -307,7 +328,7 @@
     updateCursor();
   };
   canvas.addEventListener("pointerup", endDrag); canvas.addEventListener("pointercancel", endDrag);
-  canvas.addEventListener("pointerleave", () => { pointerInside = false; updateCursor(); });
+  canvas.addEventListener("pointerleave", () => { pointerInside = false; updateCursor(); updateHover(); });
   let cursorNow = "";
   function updateCursor() {
     let v = "";
@@ -362,7 +383,7 @@
   function drawPanels() {
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(PAGE_BG[0], PAGE_BG[1], PAGE_BG[2], 1); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
     gl.useProgram(panelProg);
     gl.bindBuffer(gl.ARRAY_BUFFER, quad); gl.enableVertexAttribArray(panelA); gl.vertexAttribPointer(panelA, 2, gl.FLOAT, false, 0, 0);
     gl.uniform2f(PU.uRes, canvas.width, canvas.height);
@@ -394,22 +415,28 @@
     gl.uniform3f(LU.uBlueColor, LENS.blueColor[0], LENS.blueColor[1], LENS.blueColor[2]);
     gl.uniform1f(LU.uRimLine, LENS.rimLine * fx); gl.uniform1f(LU.uRimLinePos, LENS.rimLinePos); gl.uniform1f(LU.uRimLineWidth, LENS.rimLineWidth);
     gl.uniform1f(LU.uRotation, LENS.rotation * Math.PI / 180);
+    gl.uniform3f(LU.uPageBg, PAGE_BG[0], PAGE_BG[1], PAGE_BG[2]);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
   function tick(now) {
     runTweens(now);
+    const dt = Math.min(0.05, (now - (tick.last || now)) / 1000); tick.last = now;
+    const idle = now - lastInput > AUTO.resumeAfterMs;
     if (!dragging) {
       target += velocity; velocity *= CONFIG.FRICTION; if (Math.abs(velocity) < 0.05) velocity = 0;
-      if (CONFIG.SNAP && !snapped && !frozen && now - lastInput > CONFIG.SNAP_IDLE_MS) { target = centerForIndex(nearestIndex(scroll)); snapped = true; }
+      if (CONFIG.SNAP && !snapped && !frozen && !idle && now - lastInput > CONFIG.SNAP_IDLE_MS) { target = centerForIndex(nearestIndex(scroll)); snapped = true; }
+      // slow automatic drift once the user has been idle; pauses while a panel is hovered
+      if (idle && !hovering && !inputLocked() && !prefersReduced) target += AUTO.speed * dt;
     }
-    const follow = dragging && dragType !== "mouse" ? INTERACT.TOUCH_EASE : snapped ? CONFIG.SNAP_EASE : CONFIG.EASE;
+    const follow = dragging && dragType !== "mouse" ? INTERACT.TOUCH_EASE : (snapped && !idle) ? CONFIG.SNAP_EASE : CONFIG.EASE;
     scroll += (target - scroll) * follow;
     const rawSpeed = scroll - prevScroll; prevScroll = scroll;
     const norm = Math.min(1, Math.abs(rawSpeed) / Math.max(1, CONFIG.SHRINK_MAX));
     scrollEnergy += (norm - scrollEnergy) * (norm > scrollEnergy ? CONFIG.SHRINK_ATTACK : CONFIG.SHRINK_DECAY);
     layout();
     updateCursor();
+    updateHover();
     refreshVideos();
     drawPanels();
     drawLens(now);

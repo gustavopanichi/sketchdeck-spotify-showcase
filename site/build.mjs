@@ -55,7 +55,7 @@ const head = (title, base, extra = "") => `<!doctype html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="${base}assets/style.css">
+<link rel="stylesheet" href="${base}assets/style.css?v=${V}">
 ${extra}
 </head>`;
 
@@ -120,8 +120,8 @@ ${sidebar(base)}
   <h1 class="headline">${esc(site.headline).replace(/^(Eight years)/, "<em>$1</em>")}</h1>
   <p class="sub">${esc(site.description)}</p>
 </main>
-<script src="assets/liquid.js" defer></script>
-<script src="assets/ui.js" defer></script>
+<script src="assets/liquid.js?v=${V}" defer></script>
+<script src="assets/ui.js?v=${V}" defer></script>
 </body>
 </html>`;
 }
@@ -165,7 +165,7 @@ ${header(base, `<a class="back" href="${base}index.html">All work</a>`)}
   <section class="gallery">${(p.gallery || []).map((g) => galleryItem(base, p, g)).join("\n")}</section>
   <p class="all-work"><a href="${base}index.html">All work</a></p>
 </main>
-<script src="${base}assets/ui.js" defer></script>
+<script src="${base}assets/ui.js?v=${V}" defer></script>
 </body>
 </html>`;
 }
@@ -199,7 +199,7 @@ ${header(base, `<a class="back" href="${base}index.html">All work</a>`)}
   ${rest}
   <p class="all-work"><a href="${base}index.html">All work</a></p>
 </main>
-<script src="${base}assets/ui.js" defer></script>
+<script src="${base}assets/ui.js?v=${V}" defer></script>
 </body>
 </html>`;
 }
@@ -219,7 +219,7 @@ ${header(base, `<a class="back" href="${base}index.html">All work</a>`)}
   </section>
   <p class="all-work"><a href="${base}index.html">All work</a></p>
 </main>
-<script src="${base}assets/ui.js" defer></script>
+<script src="${base}assets/ui.js?v=${V}" defer></script>
 </body>
 </html>`;
 }
