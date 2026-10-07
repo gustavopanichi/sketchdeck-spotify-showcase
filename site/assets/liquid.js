@@ -22,7 +22,7 @@
   const LENS = { rotation: 65, sizeX: 0.565, sizeY: 1, zoom: 0, dispersion: 11, glow: 4.2, whiteGlow: 0.24, novaSize: 12, blueRing: 6, ringRadius: 0.49, ringWidth: 0.014, shimmer: true, shimmerFreq: 12, shimmerSpeed: 3.5, shimmerDepth: 0.12, rimStart: 0.578, rimTangential: 0.6, rimInward: 0, rimFreq1: 2, rimFreq2: 1, blueColor: [0 / 255, 157 / 255, 255 / 255], rimLine: 1.4, rimLinePos: 0.488, rimLineWidth: 0.003, samples: 16 };
   const AUTO = { speed: 34, resumeAfterMs: 2500 }; // px/s idle drift; resumes this long after the last wheel/drag
 const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 1.0, stagger: 0.07, fromBelow: 0.9, growDelay: 0.25, growDuration: 2.15, growStagger: 0.085, lensBloom: 1.4 };
-  const PAGE_BG = [1, 1, 1]; // White Rabbit: the framebuffer gaps blend into the page
+  const PAGE_BG = [0xF4 / 255, 0xF4 / 255, 0xF0 / 255]; // SketchDeck N1: the framebuffer gaps blend into the page
   const ASPECT = 16 / 9;
 
   const gl = canvas.getContext("webgl2", { antialias: true, alpha: false }) || canvas.getContext("webgl", { antialias: true, alpha: false });
@@ -87,6 +87,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
         float t = float(i) / float(MAX_SAMPLES - 1);
         vec2 sUV = baseUV + dispDir * (t - 0.5);
         vec4 s = texture2D(uTex, sUV);
+        if (sUV.x < 0.0 || sUV.x > 1.0 || sUV.y < 0.0 || sUV.y > 1.0) s = vec4(0.0);
         vec3 w = vec3(exp(-pow((t - 0.00) / 0.38, 2.0)), exp(-pow((t - 0.50) / 0.38, 2.0)), exp(-pow((t - 1.00) / 0.38, 2.0)));
         col += s.rgb * w; caW += w; alpha += s.a;
       }

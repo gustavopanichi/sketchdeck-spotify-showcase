@@ -8,10 +8,10 @@
   --sd-ice-ice-baby: #C0D8FF;
   --sd-accent: var(--sd-ice-ice-baby);
 
-  --page: var(--sd-white-rabbit);
+  --page: var(--sd-n1);
   --ink: var(--sd-blue-moon);
   --ink-faint: rgba(22, 22, 56, 0.14);
-  --tile: var(--sd-n1);
+  --tile: var(--sd-white-rabbit);
   --panel: var(--sd-blue-moon);
   --panel-ink: var(--sd-white-rabbit);
   --radius: 6px;
@@ -80,17 +80,18 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 /* ---------------------------------------------------------------- home */
 .home { min-height: 100dvh; overflow-x: hidden; }
-.hero { min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: clamp(8px, 1.5vh, 20px); padding: calc(var(--topbar-h) + 2vh) var(--gutter) 6vh; overflow: hidden; }
+.hero { height: 100dvh; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: clamp(8px, 1.5vh, 20px); padding: calc(var(--topbar-h) * 0.8) var(--gutter) 4vh; overflow: hidden; }
+.hero-logos, .hero .headline, .hero .sub { flex: 0 0 auto; }
 .hero-logos { display: flex; align-items: center; gap: clamp(14px, 2vw, 26px); }
-.hero-logo { height: clamp(36px, 5vw, 64px); width: auto; }
-.hero-logo-sd { height: clamp(32px, 4.5vw, 58px); }
-.hero-x { font-size: clamp(18px, 2.4vw, 30px); line-height: 1; }
-.hero .headline em { font-style: normal; color: var(--sd-blue-moon); background: var(--sd-accent); padding: 0 .18em; border-radius: 4px; }
+.hero-logo { height: clamp(26px, 3.2vw, 42px); width: auto; }
+.hero-logo-sd { height: clamp(24px, 2.9vw, 38px); }
+.hero-x { font-size: clamp(14px, 1.6vw, 20px); line-height: 1; }
+.hero .headline em { font-style: normal; }
 .hero .headline { font-size: clamp(22px, 3vw, 40px); line-height: 1.15; text-align: center; max-width: 22ch; margin: 0; }
 .hero .sub { font-size: clamp(15px, 1.2vw, 18px); text-align: center; max-width: 50ch; margin: -8px 0 0; }
 
 /* the liquid carousel: a WebGL strip of 16:9 cards seen through a tilted lens of liquid glass */
-.strip { position: relative; z-index: 1; width: 100vw; height: clamp(320px, 68vh, 820px); overflow: hidden; opacity: 0; transition: opacity .8s ease; }
+.strip { position: relative; z-index: 1; width: 100vw; flex: 1 1 auto; min-height: 180px; max-height: 820px; overflow: hidden; opacity: 0; transition: opacity .8s ease; }
 .strip-label { position: absolute; left: 0; top: 0; pointer-events: none; font-size: 11px; letter-spacing: 0; text-transform: uppercase; color: var(--ink); opacity: 0; transition: opacity .25s ease; white-space: nowrap; will-change: transform; }
 .strip-label.show { opacity: 1; }
 .strip.ready { opacity: 1; }
@@ -106,7 +107,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .expanding .hero-logos, .expanding .hero .headline, .expanding .hero .sub, .expanding .liquid { opacity: 0 !important; transition: opacity .45s ease; }
 @media (max-width: 700px) { .strip { height: 34vh; } }
 
-.morph { position: fixed; z-index: 400; overflow: hidden; border-radius: 6px; background: var(--sd-n1); pointer-events: none; will-change: transform, width, height, border-radius; }
+.morph { position: fixed; z-index: 400; overflow: hidden; border-radius: 6px; background: var(--sd-white-rabbit); pointer-events: none; will-change: transform, width, height, border-radius; }
 .morph img { width: 100%; height: 100%; object-fit: cover; }
 .morph-hero { position: absolute; inset: 0; opacity: 0; transition: opacity .45s ease .15s; }
 .morph-hero.show { opacity: 1; }
