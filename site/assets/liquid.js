@@ -100,16 +100,14 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
       float gs = max(uNovaSize * uGlow * 0.003, 0.004);
       float nova = exp(-r2 / gs) + exp(-r2 / (gs * 7.0)) * 0.18;
       nova *= uWhiteGlow * (uGlow / 17.0) * 1.15;
-      // the glass highlights live near the pictures: fade them out over empty background
+      // the glass highlights ride on the pictures and spill only a little past their edges
       float near = alpha;
-      for (int k = 1; k <= 4; k++) {
-        float d = float(k) * 0.035;
+      for (int k = 1; k <= 2; k++) {
+        float d = float(k) * 0.012;
         near = max(near, texture2D(uTex, vUv + radialDir * d).a);
         near = max(near, texture2D(uTex, vUv - radialDir * d).a);
-        near = max(near, texture2D(uTex, vUv + tangentDir * d).a);
-        near = max(near, texture2D(uTex, vUv - tangentDir * d).a);
       }
-      col += vec3(nova) * near;
+      col += vec3(nova) * alpha;
       float dC = shapeND * 0.5;
       float tR = clamp(uRingRadius, 0.1, 0.49);
       float rW = max(uRingWidth, 0.003);
