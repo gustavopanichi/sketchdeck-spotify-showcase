@@ -179,7 +179,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
     canvas.style.width = W + "px"; canvas.style.height = H + "px";
     makeFbo(canvas.width, canvas.height);
-    panelH = Math.round(Math.min(H * 0.62, W * 0.26)); // large panels, about three across, as in the original
+    panelH = Math.round(Math.min(H * 0.46, W * 0.26)); // room above and below so the bent pictures are never clipped by the canvas
     // the demo mounts full-screen, so its lens is sized against the viewport height; our strip is shorter, so scale up to match
     LENS.k = innerHeight / H;
     LENS.sizeX = 0.565 * LENS.k; LENS.sizeY = 1 * LENS.k;
