@@ -180,7 +180,9 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     canvas.style.width = W + "px"; canvas.style.height = H + "px";
     makeFbo(canvas.width, canvas.height);
     panelH = Math.round(Math.min(H * 0.62, W * 0.26)); // large panels, about three across, as in the original
-    LENS.k = 1; // original lens size: no viewport scaling
+    // the demo mounts full-screen, so its lens is sized against the viewport height; our strip is shorter, so scale up to match
+    LENS.k = innerHeight / H;
+    LENS.sizeX = 0.565 * LENS.k; LENS.sizeY = 1 * LENS.k;
     recomputeTotal();
   }
 
@@ -317,9 +319,9 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     const hit = (pointerInside && !dragging && !inputLocked() && Number.isFinite(lastPX)) ? panelAt(lastPX, lastPY) : null;
     hovering = !!hit;
     if (hit) {
-      const title = sources[hit.srcIndex].a.getAttribute("aria-label").split(",")[0];
-      if (label.textContent !== title) label.textContent = title;
-      label.style.transform = `translate(${(hit.left + hit.w / 2).toFixed(1)}px, ${(hit.top + hit.h + 12).toFixed(1)}px) translateX(-50%)`;
+      const [title, cat] = sources[hit.srcIndex].a.getAttribute("aria-label").split(",").map((t) => t.trim());
+      const html = `<b>${title}</b><span>${cat}</span>`;
+      if (label.innerHTML !== html) label.innerHTML = html;
       label.classList.add("show");
     } else label.classList.remove("show");
   }
@@ -420,7 +422,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     gl.uniform1f(LU.uRimLine, LENS.rimLine * fx); gl.uniform1f(LU.uRimLinePos, LENS.rimLinePos); gl.uniform1f(LU.uRimLineWidth, LENS.rimLineWidth);
     gl.uniform1f(LU.uRotation, LENS.rotation * Math.PI / 180);
     gl.uniform3f(LU.uPageBg, PAGE_BG[0], PAGE_BG[1], PAGE_BG[2]);
-    gl.uniform1f(LU.uRimScale, (0.565 + 1) * 0.5);
+    gl.uniform1f(LU.uRimScale, (LENS.sizeX + LENS.sizeY) * 0.5);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
