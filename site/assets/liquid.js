@@ -100,13 +100,6 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
       float gs = max(uNovaSize * uGlow * 0.003, 0.004);
       float nova = exp(-r2 / gs) + exp(-r2 / (gs * 7.0)) * 0.18;
       nova *= uWhiteGlow * (uGlow / 17.0) * 1.15;
-      // the glass highlights ride on the pictures and spill only a little past their edges
-      float near = alpha;
-      for (int k = 1; k <= 2; k++) {
-        float d = float(k) * 0.012;
-        near = max(near, texture2D(uTex, vUv + radialDir * d).a);
-        near = max(near, texture2D(uTex, vUv - radialDir * d).a);
-      }
       col += vec3(nova) * alpha;
       float dC = shapeND * 0.5;
       float tR = clamp(uRingRadius, 0.1, 0.49);
@@ -115,8 +108,8 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
       ring *= uBlueRing * (uGlow / 17.0) * 1.8;
       if (uShimmer > 0.5) ring *= sin(angle * uShimmerFreq + uTime * uShimmerSpeed) * uShimmerDepth + (1.0 - uShimmerDepth);
       float ringAura = exp(-pow((dC - tR) / (rW * 6.0), 2.0)) * 0.28 * uBlueRing * (uGlow / 17.0);
-      col += uBlueColor * (ring + ringAura) * near;
-      col += vec3(exp(-pow((dC - uRimLinePos) / max(uRimLineWidth, 0.0001), 2.0)) * uRimLine) * near;
+      col += uBlueColor * (ring + ringAura) * alpha;
+      col += vec3(exp(-pow((dC - uRimLinePos) / max(uRimLineWidth, 0.0001), 2.0)) * uRimLine) * alpha;
       outA = smoothstep(1.0, 0.93, maskND);
       return col;
     }
