@@ -1,0 +1,10 @@
+# Only the built site and the asset tooling are tracked. Raw source files (PDFs, PSDs, full-resolution PNGs,
+# original MP4s, fonts and logos) stay local.
+/*
+!/.gitignore
+!/.github/
+!/README.md
+!/site/
+!/tools/
+.DS_Store
+site/assets/video/*.sb-*
