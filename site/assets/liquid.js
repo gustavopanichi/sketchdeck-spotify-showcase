@@ -25,7 +25,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
   const PAGE_BG = [1, 1, 1]; // white, as the original
   const ASPECT = 16 / 9;
 
-  const gl = canvas.getContext("webgl2", { antialias: true, alpha: false }) || canvas.getContext("webgl", { antialias: true, alpha: false });
+  const gl = canvas.getContext("webgl2", { antialias: true, alpha: true, premultipliedAlpha: false }) || canvas.getContext("webgl", { antialias: true, alpha: true, premultipliedAlpha: false });
   if (!gl) { strip.classList.add("no-webgl"); return; }
   const isGL2 = typeof WebGL2RenderingContext !== "undefined" && gl instanceof WebGL2RenderingContext;
 
@@ -55,6 +55,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     uniform vec3  uPageBg;
     uniform float uRimScale;  // (sizeX+sizeY)/2 of the ORIGINAL lens: keeps the rim wave the same size at any aspect
     const int MAX_SAMPLES = 16;
+    float gCov = 0.0;
 
     vec3 discLens(vec2 center, float aspectCorrect, out float outA) {
       vec2 p = (vUv - center);
@@ -83,14 +84,16 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
       vec2  dispDir = offset * uDispersion * 0.004 * rimMask;
       vec3 col = vec3(0.0);
       vec3 caW = vec3(0.0);
+      float cov = 0.0;
       for (int i = 0; i < MAX_SAMPLES; i++) {
         float t = float(i) / float(MAX_SAMPLES - 1);
         vec2 sUV = baseUV + dispDir * (t - 0.5);
-        vec3 s = texture2D(uTex, sUV).rgb;
+        vec4 s = texture2D(uTex, sUV);
         vec3 w = vec3(exp(-pow((t - 0.00) / 0.38, 2.0)), exp(-pow((t - 0.50) / 0.38, 2.0)), exp(-pow((t - 1.00) / 0.38, 2.0)));
-        col += s * w; caW += w;
+        col += s.rgb * w; caW += w; cov += s.a;
       }
       col /= max(caW, vec3(0.001));
+      gCov = cov / float(MAX_SAMPLES);
       col *= mix(0.91, 1.0, smoothstep(0.0, 0.38, shapeND));
       float r2 = shapeND * shapeND * 0.25;
       float gs = max(uNovaSize * uGlow * 0.003, 0.004);
@@ -117,10 +120,10 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
       return col;
     }
     void main(){
-      vec3 base = texture2D(uTex, vUv).rgb;
+      vec4 base = texture2D(uTex, vUv);
       float a = 0.0;
       vec3 c = discLens(uCenter, uAspect, a);
-      gl_FragColor = vec4(mix(base, c, a), 1.0);
+      gl_FragColor = vec4(mix(base.rgb, c, a), mix(base.a, gCov, a));
     }`);
 
   const quad = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, quad);
@@ -165,7 +168,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
   function makeFbo(w, h) {
     if (fbo) { gl.deleteFramebuffer(fbo); gl.deleteTexture(fboTex); }
     fboTex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, fboTex);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, w, h, 0, gl.RGB, gl.UNSIGNED_BYTE, null);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     fbo = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
@@ -389,7 +392,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
   function drawPanels() {
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(PAGE_BG[0], PAGE_BG[1], PAGE_BG[2], 1); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clearColor(PAGE_BG[0], PAGE_BG[1], PAGE_BG[2], 0); gl.clear(gl.COLOR_BUFFER_BIT); // white but transparent: the page shows through wherever there is no picture
     gl.useProgram(panelProg);
     gl.bindBuffer(gl.ARRAY_BUFFER, quad); gl.enableVertexAttribArray(panelA); gl.vertexAttribPointer(panelA, 2, gl.FLOAT, false, 0, 0);
     gl.uniform2f(PU.uRes, canvas.width, canvas.height);
@@ -403,6 +406,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
   function drawLens(now) {
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
     gl.useProgram(lensProg);
     gl.bindBuffer(gl.ARRAY_BUFFER, quad); gl.enableVertexAttribArray(lensA); gl.vertexAttribPointer(lensA, 2, gl.FLOAT, false, 0, 0);
     gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, fboTex);
