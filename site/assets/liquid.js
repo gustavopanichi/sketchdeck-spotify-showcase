@@ -186,6 +186,8 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     // the demo mounts full-screen, so its lens is sized against the viewport height; our strip is shorter, so scale up to match
     LENS.k = innerHeight / H;
     LENS.sizeX = 0.565 * LENS.k; LENS.sizeY = 1 * LENS.k;
+    // pull the headline down so it sits just above the panels whatever the strip height
+    const hl = document.querySelector(".hero .headline"); if (hl) hl.style.marginBottom = -Math.max(0, (H - panelH) / 2 - 22) + "px";
     recomputeTotal();
   }
 
@@ -325,6 +327,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
       const [title, cat] = sources[hit.srcIndex].a.getAttribute("aria-label").split(",").map((t) => t.trim());
       const html = `<b>${title}</b><span>${cat}</span>`;
       if (label.innerHTML !== html) label.innerHTML = html;
+      label.style.top = (H / 2 + panelH / 2 + 14).toFixed(1) + "px"; // just under the (unshrunk) panels
       label.classList.add("show");
     } else label.classList.remove("show");
   }

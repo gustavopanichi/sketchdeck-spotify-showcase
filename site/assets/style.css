@@ -104,12 +104,12 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .hero-logo-sd { height: clamp(24px, 2.9vw, 38px); }
 .hero-x { font-size: clamp(14px, 1.6vw, 20px); line-height: 1; }
 .hero .headline em { font-style: normal; }
-.hero .headline { font-weight: 500; letter-spacing: -0.01em; font-size: clamp(22px, 2.2vw, 36px); line-height: 1.2; text-align: center; max-width: 20ch; margin: 2vh 0 -14vh; position: relative; z-index: 4; }
+.hero .headline { font-weight: 500; letter-spacing: -0.01em; font-size: clamp(22px, 2.2vw, 36px); line-height: 1.2; text-align: center; max-width: 20ch; margin: 2vh 0 0; position: relative; z-index: 4; }
 .hero .sub { font-size: clamp(15px, 1.2vw, 18px); text-align: center; max-width: 50ch; margin: -8px 0 0; }
 
 /* the liquid carousel: a WebGL strip of 16:9 cards seen through a tilted lens of liquid glass */
 .strip { position: relative; z-index: 1; width: 100vw; flex: 1 1 auto; min-height: 180px; max-height: 820px; overflow: hidden; opacity: 0; transition: opacity .8s ease; }
-.strip-label { position: absolute; left: 50%; top: auto; bottom: 23%; z-index: 4; transform: translateX(-50%); pointer-events: none; text-align: center; font-size: 16px; line-height: 1.35; color: var(--ink); opacity: 0; transition: opacity .25s ease; white-space: nowrap; }
+.strip-label { position: absolute; left: 50%; top: 0; z-index: 4; transform: translateX(-50%); pointer-events: none; text-align: center; font-size: 16px; line-height: 1.35; color: var(--ink); opacity: 0; transition: opacity .25s ease; white-space: nowrap; }
 .strip-label b { display: block; font-weight: 500; }
 .strip-label span { display: block; font-weight: 400; }
 .strip-label.show { opacity: 1; }
