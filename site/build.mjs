@@ -51,7 +51,7 @@ const head = (title, base, extra = "") => `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(site.description)}">
-<meta name="theme-color" content="#161638">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400&family=Inter:wght@400;700&display=swap" rel="stylesheet">
