@@ -225,7 +225,7 @@ function video(p) {
 <body class="vid">
 ${header(base, `<a class="back" href="${base}index.html">All work</a>`)}
 <main>
-  <div class="frame frame-video"><video class="player" src="${base}assets/video/${p.video}" poster="${base}assets/img/${p.slug}/${p.poster}" controls autoplay muted playsinline preload="metadata"></video></div>
+  <div class="frame frame-video"><video class="player" src="${base}assets/video/${p.video}" poster="${base}assets/img/${p.slug}/${p.poster}" controls playsinline preload="metadata"></video></div>
   <section class="case-head">
     <p class="eyebrow">${esc(p.category)}${p.year ? ` · ${esc(p.year)}` : ""}</p>
     <h1>${esc(p.title)}</h1>

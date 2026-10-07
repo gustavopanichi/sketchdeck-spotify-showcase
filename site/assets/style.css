@@ -116,8 +116,8 @@ main { padding: var(--topbar-h) var(--gutter) var(--gutter); }
 .frame-tint img { object-fit: contain; }
 .frame-tint.ill-multi { grid-auto-flow: column; grid-auto-columns: 1fr; gap: clamp(12px, 2vw, 32px); }
 .frame-tint.ill-multi img { max-height: 100%; }
-.frame-video { background: #000; }
-.frame-video video { object-fit: contain; }
+.frame-video { background: #000; aspect-ratio: auto; max-height: none; display: block; }
+.frame-video video { width: 100%; height: auto; max-height: 82vh; object-fit: contain; display: block; }
 .anim-in main > :not(.frame) { animation: rise .6s cubic-bezier(.2, .8, .2, 1) both; }
 .anim-in .frame { animation: fade .4s ease both; }
 @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
@@ -188,10 +188,10 @@ main { padding: var(--topbar-h) var(--gutter) var(--gutter); }
 .ill-rest.ill-stack { grid-template-columns: 1fr; }
 .ill-tile { border-radius: var(--radius); overflow: hidden; background: var(--tint); }
 .ill-tile img { width: 100%; }
-.infographic .frame-tint { padding: 0; aspect-ratio: auto; max-height: none; }
-.infographic .frame-tint img { object-fit: cover; width: 100%; height: auto; }
-.infographic .frame-tint.ill-single { max-width: 980px; }
-.infographic .ill-rest .ill-tile { max-width: 980px; }
+.infographic .frame-tint { padding: 0; aspect-ratio: auto; max-height: none; display: block; }
+.infographic .frame-tint img { object-fit: contain; width: 100%; height: auto; }
+.ill-rest.ill-two { grid-template-columns: 1fr 1fr; }
+@media (max-width: 700px) { .ill-rest.ill-two { grid-template-columns: 1fr; } }
 
 /* ---------------------------------------------------------------- video pages */
 .vid .case-head { max-width: 900px; }

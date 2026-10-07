@@ -12,7 +12,7 @@
   const prefersReduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // Tunables
-  const TRAVEL = 7;        // seconds for a card to go from the centre to the edge
+  const TRAVEL = 8.5;        // seconds for a card to go from the centre to the edge
   const GAP = 0.06;        // gap between cards, as a fraction of the near card height
   const NEAR_W = 0.30;     // width of a 3:2 card at the near edge, as a fraction of the strip width
   const P = 2.2;           // growth curve: 1 = linear, higher = cards stay small longer near the centre
