@@ -56,12 +56,12 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 /* drawer: slides down from the top edge, above everything else */
 .scrim { position: fixed; inset: 0; z-index: 900; background: rgba(22, 22, 56, 0.6); backdrop-filter: blur(3px); }
-.drawer { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; max-height: 92dvh; overflow-y: auto; background: var(--panel); color: var(--panel-ink); border-radius: 0 0 12px 12px; transform: translateY(-104%); transition: transform .55s cubic-bezier(.2, .8, .2, 1); }
+.drawer { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; max-height: 100dvh; overflow: hidden; background: var(--panel); color: var(--panel-ink); border-radius: 0 0 12px 12px; transform: translateY(-104%); transition: transform .55s cubic-bezier(.2, .8, .2, 1); }
 .menu-open .drawer { transform: none; }
-.drawer-inner { max-width: 1240px; margin: 0 auto; padding: clamp(28px, 4vw, 56px) var(--gutter) clamp(56px, 6vw, 80px); display: grid; gap: clamp(24px, 3vw, 40px); }
+.drawer-inner { max-width: 1240px; margin: 0 auto; padding: clamp(24px, 3.5vw, 48px) var(--gutter) clamp(40px, 5vw, 64px); display: grid; gap: clamp(20px, 2.5vw, 36px); }
 .drawer-top { display: grid; gap: 10px; }
 .sidebar-title { font-size: clamp(22px, 2.6vw, 34px); line-height: 1.1; max-width: 22ch; }
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: clamp(18px, 2.5vw, 36px); }
+.stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: clamp(18px, 2.5vw, 36px); }
 .stat dt { font-family: var(--font-display); font-size: clamp(36px, 4.5vw, 64px); line-height: 1; }
 .stat dd { font-size: 14px; line-height: 1.45; margin-top: 8px; max-width: 30ch; }
 .drawer-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: clamp(20px, 3vw, 48px); }
@@ -135,6 +135,7 @@ main { padding: var(--topbar-h) var(--gutter) var(--gutter); }
 .story-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 24px 48px; max-width: 1100px; }
 .story-row h2 { padding-top: 4px; }
 .story-row p { font-size: clamp(16px, 1.25vw, 20px); line-height: 1.55; max-width: 34em; }
+@media (max-width: 900px) { .stats { grid-template-columns: repeat(3, 1fr); } .stat dt { font-size: clamp(28px, 6vw, 40px); } }
 @media (max-width: 700px) { .story-row { grid-template-columns: 1fr; gap: 8px; } }
 
 .gallery { display: grid; grid-template-columns: repeat(12, 1fr); gap: clamp(12px, 1.6vw, 24px); }

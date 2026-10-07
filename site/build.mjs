@@ -40,19 +40,6 @@ const sidebar = (base) => `
           <ul class="designers">${designers.map((d) => `<li>${esc(d)}</li>`).join("")}</ul>
         </div>
       </div>
-      <div class="drawer-cols">
-        <div>
-          <h3 class="sidebar-h">Teams we have worked with</h3>
-          <ul class="teams">${teams.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
-        </div>
-        <div>
-          <h3 class="sidebar-h">In this showcase</h3>
-          <ul class="cats">
-            ${categories.map((c) => { const n = projects.filter((p) => p.category === c).length; const first = projects.find((p) => p.category === c); return `<li><a href="${base}work/${first.slug}.html">${esc(c)}</a><span>${n}</span></li>`; }).join("")}
-          </ul>
-        </div>
-      </div>
-      <p class="sidebar-foot">Figures from SketchDeck project records across all Spotify accounts, October 2026.</p>
     </div>
     <button class="drawer-close" id="sidebarClose" aria-label="Close"><span class="menu-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
   </aside>`;

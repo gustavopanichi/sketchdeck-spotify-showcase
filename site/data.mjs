@@ -11,7 +11,6 @@ export const site = {
 export const stats = [
   { value: "2018", label: "First REVERB project. Spotify has worked with SketchDeck across six separate accounts since then." },
   { value: "900+", label: "Projects placed across Spotify accounts: REVERB, Finance, Finance Strategy Ops, Songwriting, and pay-per-project teams." },
-  { value: "6", label: "Disciplines in this showcase: branding, presentations, video, social, illustration and infographics." },
   { value: "22", label: "Pieces selected here, from a 2019 Serge Gainsbourg infographic to deck systems shipped in 2026." },
 ];
 
