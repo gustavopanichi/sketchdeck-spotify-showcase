@@ -2,7 +2,6 @@
 # original MP4s, fonts and logos) stay local.
 /*
 !/.gitignore
-!/.github/
 !/README.md
 !/vercel.json
 !/site/
