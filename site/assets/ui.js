@@ -22,6 +22,23 @@
   addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("menu-open")) set(false); });
 })();
 
+// Light / dark switch. The choice is kept in localStorage and applied before first paint by a line in <head>.
+(() => {
+  const btn = document.getElementById("themeBtn");
+  if (!btn) return;
+  const root = document.documentElement, meta = document.querySelector('meta[name="theme-color"]');
+  const apply = (dark, save) => {
+    if (dark) root.setAttribute("data-theme", "dark"); else root.removeAttribute("data-theme");
+    btn.setAttribute("aria-pressed", String(dark));
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    if (meta) meta.content = dark ? "#000000" : "#FFFFFF";
+    if (save) { try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch (_) {} }
+    document.dispatchEvent(new CustomEvent("themechange", { detail: { dark } }));
+  };
+  apply(root.getAttribute("data-theme") === "dark", false);
+  btn.addEventListener("click", () => apply(root.getAttribute("data-theme") !== "dark", true));
+})();
+
 // Custom cursor: a 3 × 3 px dot. It is drawn white with difference blending, so it reads black over the white page
 // and white over dark imagery (and stays visible over colour). Only for fine pointers; touch devices are untouched.
 (() => {

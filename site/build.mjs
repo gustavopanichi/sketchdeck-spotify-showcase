@@ -12,6 +12,12 @@ const logos = (base, link) => `
     <img class="hero-logo hero-logo-sp" src="${base}assets/img/ui/spotify.png" alt="Spotify">
   </${link ? 'a' : 'div'}>`;
 
+const themeButton = `
+  <button class="theme" id="themeBtn" aria-pressed="false" aria-label="Switch to dark mode">
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.5 1.5M17.2 17.2l1.5 1.5M5.3 18.7l1.5-1.5M17.2 6.8l1.5-1.5"/></svg>
+  </button>`;
+
 const menuButton = `
   <button class="dots" id="menuBtn" aria-expanded="false" aria-controls="sidebar" aria-label="Open relationship stats">
     <span class="menu-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
@@ -52,13 +58,15 @@ const head = (title, base, extra = "") => `<!doctype html>
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(site.description)}">
 <meta name="theme-color" content="#FFFFFF">
+<script>try{if(localStorage.getItem("theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
 <link rel="preload" href="${base}assets/fonts/SpotifyMix-Medium.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="${base}assets/fonts/SpotifyMix-Extrabold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${base}assets/style.css?v=${V}">
 ${extra}
 </head>`;
 
-const header = () => `${menuButton}
+const header = () => `${themeButton}
+${menuButton}
 ${sidebar()}`;
 
 // ---------------------------------------------------------------- shared blocks

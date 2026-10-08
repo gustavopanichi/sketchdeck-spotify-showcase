@@ -26,6 +26,17 @@
   --font-display: "Spotify Mix", "Helvetica Neue", Helvetica, sans-serif;
   --font-body: "Spotify Mix", "Helvetica Neue", Helvetica, sans-serif;
 }
+/* dark mode: navy to black behind everything, every piece of chrome and type in white */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #000000;
+  --ink: #FFFFFF;
+  --ink-faint: rgba(255, 255, 255, 0.18);
+  --tile: #14142E;
+}
+html[data-theme="dark"] body { background: linear-gradient(180deg, var(--sd-blue-moon) 0%, #000000 100%) fixed; }
+html[data-theme="dark"] .hero-logo { filter: brightness(0) invert(1); }
+html[data-theme="dark"] .scrim { background: rgba(0, 0, 0, 0.55); }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
@@ -46,7 +57,17 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 a.hero-logos { width: max-content; margin: 0 auto; }
 a.hero-logos:focus-visible { outline-offset: 8px; }
 
-.dots { position: fixed; left: 50%; bottom: 3vh; transform: translateX(-50%); z-index: 80; width: 40px; height: 40px; display: grid; place-items: center; color: var(--sd-blue-moon); background: transparent; }
+.dots { position: fixed; left: 50%; bottom: 3vh; transform: translateX(-50%); z-index: 350; width: 40px; height: 40px; display: grid; place-items: center; color: var(--ink); background: transparent; }
+/* light / dark switch, top right: the moon invites dark mode, the sun invites light */
+.theme { position: fixed; right: var(--gutter); top: calc(4vh + clamp(26px, 3.2vw, 42px) / 2 - 20px); /* centred on the logo row */ z-index: 350; width: 40px; height: 40px; display: grid; place-items: center; color: var(--ink); background: transparent; }
+.theme svg { width: 20px; height: 20px; display: block; transition: transform .35s cubic-bezier(.2, .8, .2, 1); }
+.theme:hover svg { transform: rotate(20deg) scale(1.1); }
+.theme:focus-visible { outline: none; }
+.theme:focus-visible svg { transform: scale(1.15); }
+.theme .icon-sun { display: none; }
+html[data-theme="dark"] .theme .icon-sun { display: block; }
+html[data-theme="dark"] .theme .icon-moon { display: none; }
+.menu-open .theme { opacity: 0; pointer-events: none; }
 .menu-dots { display: grid; grid-template-columns: repeat(3, 5px); gap: 5px; }
 .menu-dots i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; display: block; transition: transform .35s cubic-bezier(.2,.8,.2,1); }
 .dots:hover .menu-dots i:nth-child(odd) { transform: scale(1.5); }
@@ -106,7 +127,7 @@ a.hero-logos:focus-visible { outline-offset: 8px; }
 .expanding .hero-logos, .expanding .hero .headline, .expanding .hero .sub, .expanding .liquid { opacity: 0 !important; transition: opacity .45s ease; }
 @media (max-width: 700px) { .strip { height: 34vh; } }
 
-.morph { position: fixed; z-index: 400; overflow: hidden; border-radius: 6px; background: var(--sd-n1); pointer-events: none; will-change: transform, width, height, border-radius; }
+.morph { position: fixed; z-index: 400; overflow: hidden; border-radius: 6px; background: var(--tile); pointer-events: none; will-change: transform, width, height, border-radius; }
 .morph img, .morph canvas { width: 100%; height: 100%; object-fit: cover; display: block; }
 .morph-hero { position: absolute; inset: 0; opacity: 0; transition: opacity .45s ease .15s; }
 .morph-hero.show { opacity: 1; }

@@ -21,7 +21,7 @@
   // ---- config ----
   const CONFIG = { GAP: 0.09, EASE: 0.09, WHEEL: 1.4, DRAG: 1.6, FRICTION: 0.865, SNAP: true, SNAP_IDLE_MS: 120, SNAP_EASE: 0.05, SELECT_EASE: 0.16 };
   const INTERACT = { CLICK_SLOP: 6, FLICK_IDLE_MS: 90, TOUCH_DRAG: 1.0, TOUCH_EASE: 0.22, TOUCH_CLICK_SLOP: 12 };
-  const AUTO = { speed: 34, resumeAfterMs: 2500 }; // px/s idle drift; resumes this long after the last wheel/drag
+  const AUTO = { speed: 52, resumeAfterMs: 2500 }; // px/s idle turn; resumes this long after the last wheel/drag
   const CYL = {
     aspect: num("aspect", 16 / 9),  // panel width / height: the cards stay 16:9 (0.75 gives the reference's portrait cards)
     panelH: num("panel", 0.28),    // centre panel height as a fraction of the strip height
@@ -36,7 +36,11 @@
     radius: 0.06,                  // corner radius as a fraction of the panel's short side
   };
   const ENTRY = { enabled: !prefersReduced, delay: 0.35, dur: 1.6, spin: 2.6 };
-  const PAGE_BG = [1, 1, 1];
+  // the page behind the glass: the fringes are filled with it, so it follows the light / dark switch
+  const THEMES = { light: { top: [1, 1, 1], bottom: [0.753, 0.847, 1.0], start: 0.66 }, dark: { top: [0.086, 0.086, 0.22], bottom: [0, 0, 0], start: 0 } };
+  let pageTheme = THEMES.light;
+  const readTheme = () => { pageTheme = document.documentElement.getAttribute("data-theme") === "dark" ? THEMES.dark : THEMES.light; };
+  readTheme(); document.addEventListener("themechange", readTheme);
   const TEX_ASPECT = 16 / 9; // every card.jpg is 16:9; narrower panels take a centred crop of it
 
   const GL_OPTS = { antialias: false, alpha: true, premultipliedAlpha: true };
@@ -81,8 +85,8 @@
   const glassProg = program(`
     attribute vec2 a; varying vec2 vUv; void main(){ vUv = a; gl_Position = vec4(a * 2.0 - 1.0, 0.0, 1.0); }`, `
     varying vec2 vUv; uniform sampler2D uTex;
-    uniform float uEdge, uStretchX, uStretchY, uDisp, uBlur, uWave, uWaveFreq, uTime, uFx, uFrost, uCenterY; uniform vec2 uPageY;
-    uniform vec3 uPageBg;
+    uniform float uEdge, uStretchX, uStretchY, uDisp, uBlur, uWave, uWaveFreq, uTime, uFx, uFrost, uCenterY, uGradStart; uniform vec2 uPageY;
+    uniform vec3 uPageTop, uPageBottom;
     const int NS = 16;
     void main(){
       float x = vUv.x * 2.0 - 1.0;
@@ -109,9 +113,9 @@
       col /= wSum; cov /= wSum;                    // premultiplied colour and per-channel coverage
       float A = max(cov.r, max(cov.g, cov.b));
       float py = mix(uPageY.x, uPageY.y, 1.0 - vUv.y); // this pixel's position down the viewport, 0 top .. 1 bottom
-      vec3 page = mix(uPageBg, vec3(0.753, 0.847, 1.0), clamp((py - 0.66) / 0.34, 0.0, 1.0));
+      vec3 page = mix(uPageTop, uPageBottom, clamp((py - uGradStart) / max(1.0 - uGradStart, 0.001), 0.0, 1.0));
       col += page * (A - cov);                     // a channel the glass did not reach shows the page, so fringes stay pure
-      col = mix(col, vec3(A), uFrost * s);         // frosted lift inside the glass
+      col = mix(col, page * A, uFrost * s);        // frosted lift towards the page colour inside the glass
       OUT = vec4(col, A);
     }`);
 
@@ -122,7 +126,7 @@
   const panelData = new Float32Array(20);
   const U = (p, names) => Object.fromEntries(names.map((n) => [n, gl.getUniformLocation(p, n)]));
   const PU = U(panelProg, ["uTex", "uSize", "uRadius", "uCrop"]);
-  const GU = U(glassProg, ["uTex", "uEdge", "uStretchX", "uStretchY", "uDisp", "uBlur", "uWave", "uWaveFreq", "uTime", "uFx", "uFrost", "uCenterY", "uPageY", "uPageBg"]);
+  const GU = U(glassProg, ["uTex", "uEdge", "uStretchX", "uStretchY", "uDisp", "uBlur", "uWave", "uWaveFreq", "uTime", "uFx", "uFrost", "uCenterY", "uPageY", "uGradStart", "uPageTop", "uPageBottom"]);
   const aPos = gl.getAttribLocation(panelProg, "aPos"), aUv = gl.getAttribLocation(panelProg, "aUv"), glassA = gl.getAttribLocation(glassProg, "a");
   // centred crop of the 16:9 card for the panel aspect
   const CROP = (() => { const a = CYL.aspect; if (a < TEX_ASPECT) { const fw = a / TEX_ASPECT; return [(1 - fw) / 2, 0, fw, 1]; } const fh = TEX_ASPECT / a; return [0, (1 - fh) / 2, 1, fh]; })();
@@ -190,7 +194,7 @@
     S = (W / 2) * f;               // screen pixels per radian ahead: a drag of one panel width turns the drum one panel
     hWorld = panelH / S; wWorld = hWorld * CYL.aspect;
     pitch = 2 * Math.atan(wWorld / 2) + wWorld * CONFIG.GAP; // radians per slot
-    const hl = strip.querySelector(".headline"); if (hl) hl.style.bottom = (H / 2 - yOff + panelH / 2 + 22).toFixed(1) + "px";
+    const hl = strip.querySelector(".headline"); if (hl) hl.style.bottom = (H / 2 - yOff + panelH / 2 + 52).toFixed(1) + "px"; // 52 px above the front panel
     recomputeTotal();
   }
   // the scroll physics stay in pixels (one slot = the pitch seen from the centre), so wheel and drag feel as before
@@ -570,7 +574,7 @@
     gl.uniform1f(GU.uEdge, CYL.edge); gl.uniform1f(GU.uStretchX, CYL.stretchX); gl.uniform1f(GU.uStretchY, stretchYEff);
     gl.uniform1f(GU.uDisp, CYL.dispersion); gl.uniform1f(GU.uBlur, CYL.blur); gl.uniform1f(GU.uWave, CYL.wave); gl.uniform1f(GU.uWaveFreq, CYL.waveFreq);
     gl.uniform1f(GU.uTime, prefersReduced ? 0 : now / 1000 * CYL.waveSpeed); gl.uniform1f(GU.uFx, entryT); gl.uniform1f(GU.uFrost, CYL.frost);
-    gl.uniform3f(GU.uPageBg, PAGE_BG[0], PAGE_BG[1], PAGE_BG[2]);
+    gl.uniform3f(GU.uPageTop, pageTheme.top[0], pageTheme.top[1], pageTheme.top[2]); gl.uniform3f(GU.uPageBottom, pageTheme.bottom[0], pageTheme.bottom[1], pageTheme.bottom[2]); gl.uniform1f(GU.uGradStart, pageTheme.start);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
