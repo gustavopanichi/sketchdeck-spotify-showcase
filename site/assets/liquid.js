@@ -382,7 +382,8 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     const res = await fetch(href, { credentials: "same-origin" });
     const doc = new DOMParser().parseFromString(await res.text(), "text/html");
     const main = doc.querySelector("main.page");
-    return { title: doc.title, html: main ? rebase(main.outerHTML) : null };
+    // the page's body classes (case / ill / infographic / vid) drive its layout rules, so they travel with it
+    return { title: doc.title, html: main ? rebase(main.outerHTML) : null, bodyClass: doc.body ? doc.body.className : "" };
   }
   function expand(card, r) {
     if (frozen) return;
@@ -424,7 +425,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
   function openOverlay(page, href, push) {
     closeOverlay(false);
     overlay = document.createElement("div");
-    overlay.className = "overlay anim-in";
+    overlay.className = "overlay anim-in " + (page.bodyClass || "");
     overlay.innerHTML = page.html;
     document.body.appendChild(overlay);
     document.body.classList.add("overlay-open");
