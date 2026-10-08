@@ -41,3 +41,8 @@ current pipeline; its paths point at a scratch directory, so adjust `S=` before 
 The home carousel is a plain-WebGL port of [liquid-glass-carousel](https://github.com/Yousuf-developer/liquid-glass-carousel)
 by Yousuf-developer (MIT). The lens shader and the scroll/snap/entry behaviour follow that project; the click action
 was changed to open our case studies.
+
+## Case studies open in place
+On the home page a click fetches the case page, lays its `<main>` over the home page (same chrome) and updates the URL with
+`history.pushState`; Back, Forward and the logos restore the carousel without reloading. Direct links to `work/*.html` still
+render as standalone pages.

@@ -370,9 +370,25 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     const w = innerWidth - gutter * 2;
     return { left: gutter, top, width: w, height: Math.min(w * 9 / 16, innerHeight * 0.82) };
   }
+  // Open a case study in place: the card morphs into the hero frame while the page is fetched, then the page's
+  // content is laid over the home page (same chrome, same positions). The URL updates; Back or the logos return
+  // to the carousel exactly where it was.
+  let overlay = null;
+  const HOME_URL = location.href; // every page path is resolved against the home page, whatever the address bar says
+  const abs = (href) => new URL(href, HOME_URL).href;
+  const HOME_DIR = location.href.replace(/[^/]*$/, ""); // absolute, so inserted images resolve correctly after the URL changes
+  const rebase = (html) => html.replace(/(src|href|poster)="\.\.\//g, `$1="${HOME_DIR}`);
+  async function fetchPage(href) {
+    const res = await fetch(href, { credentials: "same-origin" });
+    const doc = new DOMParser().parseFromString(await res.text(), "text/html");
+    const main = doc.querySelector("main.page");
+    return { title: doc.title, html: main ? rebase(main.outerHTML) : null };
+  }
   function expand(card, r) {
     if (frozen) return;
     frozen = true; updateCursor();
+    const href = abs(card.getAttribute("href"));
+    const pagePromise = fetchPage(href).catch(() => null);
     const media = card.querySelector("img, video");
     const m = document.createElement("div"); m.className = "morph";
     const startImg = new Image(); startImg.src = media.tagName === "VIDEO" ? media.poster : media.getAttribute("src");
@@ -391,8 +407,41 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
       { left: r.left + "px", top: r.top + "px", width: r.width + "px", height: r.height + "px" },
       { left: t.left + "px", top: t.top + "px", width: t.width + "px", height: t.height + "px" },
     ], { duration: prefersReduced ? 0 : 700, easing: "cubic-bezier(.65, 0, .25, 1)", fill: "forwards" });
-    anim.onfinish = () => { try { sessionStorage.setItem("fromOrbit", "1"); } catch (_) {} location.href = card.href; };
+    const done = new Promise((res) => { anim.onfinish = res; });
+    Promise.all([done, pagePromise]).then(([, page]) => {
+      if (!page || !page.html) { location.href = href; return; }
+      openOverlay(page, href, true);
+      // let the overlay's hero paint underneath, then drop the morph
+      requestAnimationFrame(() => requestAnimationFrame(() => { m.remove(); document.body.classList.remove("expanding"); }));
+    });
   }
+  function openOverlay(page, href, push) {
+    closeOverlay(false);
+    overlay = document.createElement("div");
+    overlay.className = "overlay anim-in";
+    overlay.innerHTML = page.html;
+    document.body.appendChild(overlay);
+    document.body.classList.add("overlay-open");
+    document.title = page.title || document.title;
+    overlay.querySelectorAll("video[autoplay]").forEach((v) => { v.muted = true; v.play().catch(() => {}); });
+    overlay.querySelectorAll('a[href$="index.html"]').forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); history.back(); }, { once: true }));
+    if (push) history.pushState({ work: href }, "", href);
+    overlay.scrollTop = 0;
+  }
+  function closeOverlay(unfreeze = true) {
+    if (!overlay) return;
+    overlay.remove(); overlay = null;
+    document.body.classList.remove("overlay-open", "expanding");
+    document.querySelectorAll(".morph").forEach((n) => n.remove());
+    document.title = HOME_TITLE;
+    if (unfreeze) { frozen = false; lastInput = performance.now(); updateCursor(); }
+  }
+  const HOME_TITLE = document.title;
+  addEventListener("popstate", (e) => {
+    if (e.state && e.state.work) { frozen = true; fetchPage(abs(e.state.work)).then((page) => { if (page && page.html) openOverlay(page, e.state.work, false); else closeOverlay(true); }); }
+    else closeOverlay(true);
+  });
+  // deep link reload: the standalone page handles itself; nothing to do here
   addEventListener("pageshow", (e) => { if (e.persisted) { frozen = false; document.body.classList.remove("expanding"); document.querySelectorAll(".morph").forEach((n) => n.remove()); } });
 
   // ---- render ----

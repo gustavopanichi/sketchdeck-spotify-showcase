@@ -222,3 +222,9 @@ main.page { padding: 0 var(--gutter) 14vh; }
 .cursor-dot.show { opacity: 1; }
 .cursor-dot.down { width: 5px; height: 5px; }
 @media (prefers-reduced-motion: reduce) { .cursor-dot { transition: opacity .2s ease; } }
+
+/* ---------------------------------------------------------------- in-place case study (overlay over the home page) */
+.overlay { position: fixed; inset: 0; z-index: 300; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.overlay main.page { min-height: 100%; }
+.overlay-open .hero { visibility: hidden; }
+.overlay-open .strip-label { opacity: 0 !important; }
