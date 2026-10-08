@@ -109,7 +109,7 @@ ${header()}
     <div class="ring" id="ring" aria-hidden="false">${projects.map(card).join("")}</div>
   </div>
 </main>
-<script src="assets/liquid.js?v=${V}" defer></script>
+<script>(function(){var c=new URLSearchParams(location.search).get("carousel");var s=document.createElement("script");s.src="assets/"+(c==="liquid"?"liquid":"cylinder")+".js?v=${V}";document.body.appendChild(s);})();</script>
 <script src="assets/ui.js?v=${V}" defer></script>
 </body>
 </html>`;
