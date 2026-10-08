@@ -363,8 +363,8 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
   // ---- expand into the case-study frame ----
   // where the case page's hero frame will sit: directly under the (fixed-position) logos, which stay put between pages
   function frameRect() {
-    const cs = getComputedStyle(document.documentElement);
-    const gutter = parseFloat(cs.getPropertyValue("--gutter")) || 24;
+    // the gutter is a clamp() value, so read it resolved from the hero's padding rather than parsing the variable
+    const gutter = parseFloat(getComputedStyle(document.querySelector(".hero") || document.body).paddingLeft) || 24;
     const lg = document.querySelector(".hero-logos");
     const top = lg ? lg.getBoundingClientRect().bottom + 24 : 84;
     const w = innerWidth - gutter * 2;
@@ -391,16 +391,20 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     const pagePromise = fetchPage(href).catch(() => null);
     const media = card.querySelector("img, video");
     const m = document.createElement("div"); m.className = "morph";
-    const startImg = new Image(); startImg.src = media.tagName === "VIDEO" ? media.poster : media.getAttribute("src");
+    let startImg;
+    if (media.tagName === "VIDEO" && media.readyState >= 2 && media.videoWidth) {
+      // start from the exact frame the strip is showing right now, not the poster
+      startImg = document.createElement("canvas"); startImg.width = media.videoWidth; startImg.height = media.videoHeight;
+      startImg.getContext("2d").drawImage(media, 0, 0);
+    } else { startImg = new Image(); startImg.src = media.tagName === "VIDEO" ? media.poster : media.getAttribute("src"); }
     m.appendChild(startImg);
     Object.assign(m.style, { left: r.left + "px", top: r.top + "px", width: r.width + "px", height: r.height + "px", borderRadius: "6px" });
     document.body.appendChild(m);
     document.body.classList.add("expanding");
     if (card.dataset.hero) {
       const hero = new Image(); hero.className = "morph-hero";
-      if (card.dataset.tint) { hero.style.objectFit = "contain"; m.style.background = card.dataset.tint; hero.style.padding = "clamp(16px, 4vw, 56px)"; hero.style.boxSizing = "border-box"; }
       hero.onload = () => { m.appendChild(hero); requestAnimationFrame(() => hero.classList.add("show")); };
-      hero.src = card.dataset.hero;
+      hero.src = abs(card.dataset.hero);
     }
     const t = frameRect();
     const anim = m.animate([

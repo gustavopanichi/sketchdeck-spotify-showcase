@@ -107,7 +107,7 @@ a.hero-logos:focus-visible { outline-offset: 8px; }
 @media (max-width: 700px) { .strip { height: 34vh; } }
 
 .morph { position: fixed; z-index: 400; overflow: hidden; border-radius: 6px; background: var(--sd-n1); pointer-events: none; will-change: transform, width, height, border-radius; }
-.morph img { width: 100%; height: 100%; object-fit: cover; }
+.morph img, .morph canvas { width: 100%; height: 100%; object-fit: cover; display: block; }
 .morph-hero { position: absolute; inset: 0; opacity: 0; transition: opacity .45s ease .15s; }
 .morph-hero.show { opacity: 1; }
 

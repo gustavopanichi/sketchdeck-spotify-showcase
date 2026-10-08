@@ -75,6 +75,13 @@ const lcCards = [
 const lcIlls = ["ill_01", "ill_02", "ill_03", "ill_05", "ill_06", "ill_07", "ill_08", "ill_09", "ill_11", "ill_12", "ill_15", "ill_17", "ill_18", "ill_19", "ill_20"];
 
 // kind: "case" (full case study) | "illustration" (big image in a tinted frame) | "video" (full-width player)
+// Pixel sizes of the tall infographic images, so the page reserves their height before they load.
+export const imageDims = {
+  "elvis/01.jpg": [1800, 3725], "serge/01.jpg": [1800, 5070], "serge/02.jpg": [1800, 5070],
+  "earnings-call-2021/01.jpg": [1800, 10863], "earnings-call-2021/02.jpg": [1800, 10863],
+  "strategy-days-takeaways/01.jpg": [1800, 1012], "strategy-days-takeaways/02.jpg": [1800, 1012], "strategy-days-takeaways/03.jpg": [1800, 1012],
+};
+
 // Projects with motion assets show them on the home strip instead of a still.
 export const cardVideos = {
   "audio-playground": { video: "audio-playground-save-the-date.mp4" },
@@ -378,13 +385,13 @@ export const projects = [
   },
 
   // ---------------------------------------------------------------- Illustrations
-  { slug: "welcome-to-new-york", kind: "illustration", title: "Welcome to New York", category: "Illustration", team: "Spotify REVERB", bg: "#6950E5", full: "full.jpg", details: 4 },
-  { slug: "heart", kind: "illustration", title: "Heart", category: "Illustration", team: "Spotify REVERB", bg: "#7656FF", full: "full.jpg", details: 4 },
-  { slug: "execution-guidance", kind: "illustration", title: "Execution Guidance", category: "Illustration", year: "2024", team: "Spotify REVERB", bg: "#FBEAEE", images: ["1.png", "2.png", "3.png"], details: 4 },
-  { slug: "one-million-tickets", kind: "illustration", title: "1 Million Tickets", category: "Illustration", team: "Spotify Live Events", bg: "#000000", full: "full.jpg", details: 4 },
-  { slug: "space-biker", kind: "illustration", title: "Space Biker on Pegasus", category: "Illustration", team: "Spotify Productivity Engineering", bg: "#161638", full: "full.jpg", details: 4 },
-  { slug: "punk-rider", kind: "illustration", title: "Punk Rider", category: "Illustration", team: "Spotify Productivity Engineering", bg: "#161638", full: "full.jpg", details: 4 },
-  { slug: "strategy-days", kind: "illustration", title: "Strategy Days", category: "Illustration", year: "2024", team: "Spotify REVERB", bg: "#F5E6E0", images: ["1.png", "2.png", "3.png"], details: 4 },
+  { slug: "welcome-to-new-york", kind: "illustration", title: "Welcome to New York", category: "Illustration", team: "Spotify REVERB", bg: "#6950E5", full: "hero.jpg", details: 4 },
+  { slug: "heart", kind: "illustration", title: "Heart", category: "Illustration", team: "Spotify REVERB", bg: "#7656FF", full: "hero.jpg", details: 4 },
+  { slug: "execution-guidance", kind: "illustration", title: "Execution Guidance", category: "Illustration", year: "2024", team: "Spotify REVERB", bg: "#FBEAEE", images: ["1.png", "2.png", "3.png"], full: "hero.jpg", details: 4 },
+  { slug: "one-million-tickets", kind: "illustration", title: "1 Million Tickets", category: "Illustration", team: "Spotify Live Events", bg: "#000000", full: "hero.jpg", details: 4 },
+  { slug: "space-biker", kind: "illustration", title: "Space Biker on Pegasus", category: "Illustration", team: "Spotify Productivity Engineering", bg: "#161638", full: "hero.jpg", details: 4 },
+  { slug: "punk-rider", kind: "illustration", title: "Punk Rider", category: "Illustration", team: "Spotify Productivity Engineering", bg: "#161638", full: "hero.jpg", details: 4 },
+  { slug: "strategy-days", kind: "illustration", title: "Strategy Days", category: "Illustration", year: "2024", team: "Spotify REVERB", bg: "#F5E6E0", images: ["1.png", "2.png", "3.png"], full: "hero.jpg", details: 4 },
 
   // ---------------------------------------------------------------- Infographics
   { slug: "strategy-days-takeaways", kind: "illustration", title: "Strategy Days: Top Takeaways", category: "Infographic", year: "2025", team: "Spotify REVERB", bg: "#0E0A1A", images: ["01.jpg", "02.jpg", "03.jpg"], stack: true },

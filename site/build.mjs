@@ -1,6 +1,6 @@
 // Static site generator. Run: node build.mjs   (from the site/ folder)
 import { mkdirSync, writeFileSync, rmSync, existsSync } from "node:fs";
-import { site, stats, teams, people, designers, orgFacts, projects, cardVideos } from "./data.mjs";
+import { site, stats, teams, people, designers, orgFacts, projects, cardVideos, imageDims } from "./data.mjs";
 
 const V = Date.now().toString(36); // cache-buster for regenerated thumbnails
 const esc = (s = "") => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -96,7 +96,7 @@ function home() {
     const media = v
       ? `<video src="assets/video/${v.video}" poster="assets/img/${p.slug}/card.jpg?v=${V}" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>`
       : `<img src="assets/img/${p.slug}/card.jpg?v=${V}" alt="" loading="eager" decoding="async">`;
-    return `<a class="card" href="work/${p.slug}.html" data-ar="1" data-hero="${heroOf(p)}" data-tint="${p.bg || ""}" aria-label="${esc(p.title)}, ${esc(p.category)}">${media}</a>`;
+    return `<a class="card" href="work/${p.slug}.html" data-ar="1" data-hero="${heroOf(p)}" aria-label="${esc(p.title)}, ${esc(p.category)}">${media}</a>`;
   };
   return `${head(site.title, base)}
 <body class="home">
@@ -168,12 +168,13 @@ function illustration(p) {
   let frame, rest = "";
   if (isInfographic) {
     const layout = p.stack ? "ill-stack" : p.columns === 2 ? "ill-two" : "ill-single";
-    const imgs = p.images.map((f, k) => `<img src="${img(f)}" alt="${esc(p.title)}${p.images.length > 1 ? ` ${k + 1}` : ""}" decoding="async" ${k === 0 ? 'fetchpriority="high"' : 'loading="lazy"'}>`);
+    const dims = (f) => { const d = imageDims[`${p.slug}/${f}`]; return d ? ` width="${d[0]}" height="${d[1]}"` : ""; };
+    const imgs = p.images.map((f, k) => `<img src="${img(f)}"${dims(f)} alt="${esc(p.title)}${p.images.length > 1 ? ` ${k + 1}` : ""}" decoding="async" ${k === 0 ? 'fetchpriority="high"' : 'loading="lazy"'}>`);
     frame = `<div class="frame frame-tint ${layout}">${imgs[0]}</div>`;
     if (imgs.length > 1) rest = `<section class="ill-rest ${layout}">${imgs.slice(1).map((i) => `<div class="ill-tile">${i}</div>`).join("")}</section>`;
   } else {
     // the full piece up top: the artwork itself when it is a finished frame, otherwise all pieces on the tint
-    if (p.full) frame = `<figure class="frame frame-full"><img src="${img(p.full)}" alt="${esc(p.title)}" decoding="async" fetchpriority="high"></figure>`;
+    if (p.full) frame = `<figure class="frame"><img src="${img(p.full)}" alt="${esc(p.title)}" decoding="async" fetchpriority="high"></figure>`;
     else frame = `<div class="frame frame-tint ill-multi">${p.images.map((f, k) => `<img src="${img(f)}" alt="${esc(p.title)} ${k + 1}" decoding="async">`).join("")}</div>`;
     if (p.details) rest = `<section class="gallery details">${Array.from({ length: p.details }, (_, k) => `<figure class="g g-half g-square"><img src="${img(`detail-${k + 1}.jpg`)}" alt="${esc(p.title)}, detail ${k + 1}" loading="lazy" decoding="async"></figure>`).join("")}</section>`;
   }
