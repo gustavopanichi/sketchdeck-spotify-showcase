@@ -411,8 +411,10 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     Promise.all([done, pagePromise]).then(([, page]) => {
       if (!page || !page.html) { location.href = href; return; }
       openOverlay(page, href, true);
-      // let the overlay's hero paint underneath, then drop the morph
-      requestAnimationFrame(() => requestAnimationFrame(() => { m.remove(); document.body.classList.remove("expanding"); }));
+      // keep the expanded card on screen until the page's own hero is decoded and painted underneath it, then let go
+      const heroImg = overlay && overlay.querySelector(".frame img, .frame video");
+      const ready = heroImg && heroImg.decode ? heroImg.decode().catch(() => {}) : Promise.resolve();
+      ready.then(() => requestAnimationFrame(() => requestAnimationFrame(() => { m.style.transition = "opacity .25s ease"; m.style.opacity = "0"; setTimeout(() => { m.remove(); document.body.classList.remove("expanding"); }, 260); })));
     });
   }
   function openOverlay(page, href, push) {
