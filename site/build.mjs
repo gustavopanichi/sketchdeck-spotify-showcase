@@ -96,7 +96,7 @@ function home() {
     const media = v
       ? `<video src="assets/video/${v.video}" poster="assets/img/${p.slug}/card.jpg?v=${V}" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>`
       : `<img src="assets/img/${p.slug}/card.jpg?v=${V}" alt="" loading="eager" decoding="async">`;
-    return `<a class="card" href="work/${p.slug}.html" data-ar="1" data-hero="${heroOf(p)}" aria-label="${esc(p.title)}, ${esc(p.category)}">${media}</a>`;
+    return `<a class="card" href="work/${p.slug}.html" data-ar="1" data-kind="${p.category === "Infographic" ? "infographic" : (p.kind || "case")}" data-hero="${heroOf(p)}" aria-label="${esc(p.title)}, ${esc(p.category)}">${media}</a>`;
   };
   return `${head(site.title, base)}
 <body class="home">

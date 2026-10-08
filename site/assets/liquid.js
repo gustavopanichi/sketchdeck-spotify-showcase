@@ -247,7 +247,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     let growEnd = growStart;
     tween(lensState, "fx", 1, growStart, ENTRY.lensBloom, ease.power2InOut);
     visible.forEach((v) => { const at = growStart + (maxRank - v.rank) * ENTRY.growStagger; growEnd = Math.max(growEnd, at + ENTRY.growDuration); tween(growArr, v.idx, 1, at, ENTRY.growDuration, ease.expoInOut); });
-    call(() => { entrySettled = false; growArr.fill(1); pEntry.fill(1); strip.classList.add("entered"); }, growEnd);
+    call(() => { entrySettled = false; growArr.fill(1); pEntry.fill(1); strip.classList.add("entered"); setTimeout(warmAll, 1200); }, growEnd);
   }
 
   // ---- layout: panel rects for the current scroll (every frame) ----
@@ -321,10 +321,12 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
   });
   // hover: the strip pauses and the project name appears under the panel
   const label = document.createElement("div"); label.className = "strip-label"; strip.appendChild(label);
+  let lastWarm = -1;
   function updateHover() {
     const hit = (pointerInside && !dragging && !inputLocked() && Number.isFinite(lastPX)) ? panelAt(lastPX, lastPY) : null;
     hovering = !!hit;
     if (hit) {
+      if (hit.srcIndex !== lastWarm) { lastWarm = hit.srcIndex; warmCard(sources[hit.srcIndex].a); } // fetch its hero and page before the click
       const [title, cat] = sources[hit.srcIndex].a.getAttribute("aria-label").split(",").map((t) => t.trim());
       const html = `<b>${title}</b><span>${cat}</span>`;
       if (label.innerHTML !== html) label.innerHTML = html;
@@ -358,17 +360,19 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     expand(sources[hit.srcIndex].a, { left: r.left + hit.left, top: r.top + hit.top, width: hit.w, height: hit.h });
   });
   // keyboard users reach the real anchors in the visually hidden list
-  ring.addEventListener("click", (e) => { const a = e.target.closest(".card"); if (!a) return; e.preventDefault(); expand(a, frameRect()); });
+  ring.addEventListener("click", (e) => { const a = e.target.closest(".card"); if (!a) return; e.preventDefault(); expand(a, frameRect(a.dataset.kind)); });
 
   // ---- expand into the case-study frame ----
-  // where the case page's hero frame will sit: directly under the (fixed-position) logos, which stay put between pages
-  function frameRect() {
+  // where the case page's hero frame will sit: directly under the (fixed-position) logos, which stay put between pages.
+  // The frame is 16:9 and no taller than 82vh (centred when that cap applies); infographics keep the full width.
+  function frameRect(kind) {
     // the gutter is a clamp() value, so read it resolved from the hero's padding rather than parsing the variable
     const gutter = parseFloat(getComputedStyle(document.querySelector(".hero") || document.body).paddingLeft) || 24;
     const lg = document.querySelector(".hero-logos");
     const top = lg ? lg.getBoundingClientRect().bottom + 24 : 84;
-    const w = innerWidth - gutter * 2;
-    return { left: gutter, top, width: w, height: Math.min(w * 9 / 16, innerHeight * 0.82) };
+    const full = innerWidth - gutter * 2;
+    const w = kind === "infographic" ? full : Math.min(full, innerHeight * 0.82 * 16 / 9);
+    return { left: (innerWidth - w) / 2, top, width: w, height: w * 9 / 16 };
   }
   // Open a case study in place: the card morphs into the hero frame while the page is fetched, then the page's
   // content is laid over the home page (same chrome, same positions). The URL updates; Back or the logos return
@@ -385,29 +389,80 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     // the page's body classes (case / ill / infographic / vid) drive its layout rules, so they travel with it
     return { title: doc.title, html: main ? rebase(main.outerHTML) : null, bodyClass: doc.body ? doc.body.className : "" };
   }
+  // ---- warm-up: a hovered card's hero picture and page are fetched before the click, and on desktops every hero is
+  // fetched quietly once the entry animation is over, so the expanding card can show the sharp hero from its first frame
+  const heroCache = new Map(); // hero src -> { img, ready, done }
+  const pageCache = new Map(); // page href -> Promise<page>
+  function warmHero(src) {
+    if (!src) return null;
+    if (heroCache.has(src)) return heroCache.get(src);
+    const img = new Image(); img.decoding = "async";
+    try { img.fetchPriority = "low"; } catch (_) {}
+    const entry = { img, done: false, ready: null };
+    entry.ready = new Promise((res) => {
+      img.onload = () => (img.decode ? img.decode().catch(() => {}) : Promise.resolve()).then(() => { entry.done = true; res(true); });
+      img.onerror = () => res(false);
+    });
+    img.src = src;
+    heroCache.set(src, entry);
+    return entry;
+  }
+  function warmPage(href) {
+    if (!pageCache.has(href)) {
+      const p = fetchPage(href).catch(() => null);
+      pageCache.set(href, p);
+      p.then((page) => { if (!page || !page.html) pageCache.delete(href); }); // a failed fetch is retried next time
+    }
+    return pageCache.get(href);
+  }
+  function warmCard(a) { if (a.dataset.hero) warmHero(abs(a.dataset.hero)); warmPage(abs(a.getAttribute("href"))); }
+  function warmAll() {
+    if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return; // never pull every hero over a phone connection
+    const c = navigator.connection; if (c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || ""))) return; // Chrome's "3g" guess is unreliable on good links
+    const mid = centerIndex(scroll);
+    const order = sources.map((s, i) => ({ s, d: Math.abs(i - mid) })).sort((x, y) => x.d - y.d).map((o) => o.s);
+    const pause = () => new Promise((res) => setTimeout(res, 400));
+    (async () => {
+      for (const s of order) {
+        while (frozen) await pause(); // a page is open: let its own pictures load first, carry on afterwards
+        const e = s.a.dataset.hero ? warmHero(abs(s.a.dataset.hero)) : null; warmPage(abs(s.a.getAttribute("href")));
+        if (e) await e.ready;
+      }
+    })();
+  }
+  const loadImage = (src) => new Promise((res) => { if (!src) return res(); const i = new Image(); i.onload = () => (i.decode ? i.decode().catch(() => {}) : Promise.resolve()).then(res); i.onerror = () => res(); i.src = src; });
   function expand(card, r) {
     if (frozen) return;
     frozen = true; updateCursor();
+    const kind = card.dataset.kind || "";
     const href = abs(card.getAttribute("href"));
-    const pagePromise = fetchPage(href).catch(() => null);
+    const pagePromise = warmPage(href);
     const media = card.querySelector("img, video");
+    const heroSrc = card.dataset.hero ? abs(card.dataset.hero) : "";
+    const cached = heroSrc ? heroCache.get(heroSrc) : null;
     const m = document.createElement("div"); m.className = "morph";
-    let startImg;
+    let startImg, snapshot = null, heroLater = false;
     if (media.tagName === "VIDEO" && media.readyState >= 2 && media.videoWidth) {
-      // start from the exact frame the strip is showing right now, not the poster
+      // start from the exact frame the strip is showing right now; the page's player then opens on that same frame
       startImg = document.createElement("canvas"); startImg.width = media.videoWidth; startImg.height = media.videoHeight;
       startImg.getContext("2d").drawImage(media, 0, 0);
-    } else { startImg = new Image(); startImg.src = media.tagName === "VIDEO" ? media.poster : media.getAttribute("src"); }
+      try { snapshot = startImg.toDataURL("image/jpeg", 0.92); } catch (_) { heroLater = true; }
+    } else if (cached && cached.done) {
+      startImg = cached.img.cloneNode(); // already fetched and decoded: the sharp hero from the first frame, nothing to swap in later
+    } else {
+      startImg = new Image(); startImg.src = media.tagName === "VIDEO" ? media.poster : media.getAttribute("src");
+      heroLater = !!heroSrc;
+    }
     m.appendChild(startImg);
     Object.assign(m.style, { left: r.left + "px", top: r.top + "px", width: r.width + "px", height: r.height + "px", borderRadius: "6px" });
     document.body.appendChild(m);
     document.body.classList.add("expanding");
-    if (card.dataset.hero) {
-      const hero = new Image(); hero.className = "morph-hero";
-      hero.onload = () => { m.appendChild(hero); requestAnimationFrame(() => hero.classList.add("show")); };
-      hero.src = abs(card.dataset.hero);
+    if (heroLater) {
+      // the thumbnail is upscaled meanwhile; the hero fades in over it the moment it arrives
+      const e = warmHero(heroSrc);
+      if (e) e.ready.then((ok) => { if (!ok || !m.isConnected) return; const hero = e.img.cloneNode(); hero.className = "morph-hero"; m.appendChild(hero); requestAnimationFrame(() => hero.classList.add("show")); });
     }
-    const t = frameRect();
+    const t = frameRect(kind);
     const anim = m.animate([
       { left: r.left + "px", top: r.top + "px", width: r.width + "px", height: r.height + "px" },
       { left: t.left + "px", top: t.top + "px", width: t.width + "px", height: t.height + "px" },
@@ -416,10 +471,28 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
     Promise.all([done, pagePromise]).then(([, page]) => {
       if (!page || !page.html) { location.href = href; return; }
       openOverlay(page, href, true);
-      // keep the expanded card on screen until the page's own hero is decoded and painted underneath it, then let go
-      const heroImg = overlay && overlay.querySelector(".frame img, .frame video");
-      const ready = heroImg && heroImg.decode ? heroImg.decode().catch(() => {}) : Promise.resolve();
-      ready.then(() => requestAnimationFrame(() => requestAnimationFrame(() => { m.style.transition = "opacity .25s ease"; m.style.opacity = "0"; setTimeout(() => { m.remove(); document.body.classList.remove("expanding"); }, 260); })));
+      const frame = overlay && overlay.querySelector(".frame");
+      const heroEl = frame && frame.querySelector("img, video");
+      if (heroEl && heroEl.tagName === "VIDEO" && snapshot) heroEl.poster = snapshot;
+      // the real frame can differ from the predicted box by a scrollbar or a rounding step: glide the last pixels
+      let glide = Promise.resolve();
+      if (frame) {
+        const fr = frame.getBoundingClientRect();
+        const want = { left: fr.left, top: fr.top, width: fr.width, height: kind === "infographic" ? fr.width * 9 / 16 : fr.height };
+        if (Math.abs(want.left - t.left) > 0.5 || Math.abs(want.top - t.top) > 0.5 || Math.abs(want.width - t.width) > 0.5 || Math.abs(want.height - t.height) > 0.5) {
+          const a2 = m.animate([
+            { left: t.left + "px", top: t.top + "px", width: t.width + "px", height: t.height + "px" },
+            { left: want.left + "px", top: want.top + "px", width: want.width + "px", height: want.height + "px" },
+          ], { duration: prefersReduced ? 0 : 160, easing: "ease-out", fill: "forwards" });
+          glide = new Promise((res) => { a2.onfinish = res; });
+        }
+      }
+      // keep the expanded card on screen until the page's own picture is decoded and painted underneath it, then let go
+      let ready;
+      if (heroEl && heroEl.tagName === "VIDEO") ready = loadImage(heroEl.poster);
+      else if (heroEl && heroEl.decode) ready = heroEl.decode().catch(() => {});
+      else ready = Promise.resolve();
+      Promise.all([ready, glide]).then(() => requestAnimationFrame(() => requestAnimationFrame(() => { m.style.transition = "opacity .25s ease"; m.style.opacity = "0"; setTimeout(() => { m.remove(); document.body.classList.remove("expanding"); }, 260); })));
     });
   }
   function openOverlay(page, href, push) {
@@ -445,7 +518,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
   }
   const HOME_TITLE = document.title;
   addEventListener("popstate", (e) => {
-    if (e.state && e.state.work) { frozen = true; fetchPage(abs(e.state.work)).then((page) => { if (page && page.html) openOverlay(page, e.state.work, false); else closeOverlay(true); }); }
+    if (e.state && e.state.work) { frozen = true; warmPage(abs(e.state.work)).then((page) => { if (page && page.html) openOverlay(page, e.state.work, false); else closeOverlay(true); }); }
     else closeOverlay(true);
   });
   // deep link reload: the standalone page handles itself; nothing to do here
@@ -518,7 +591,7 @@ const ENTRY = { enabled: !prefersReduced, delay: 0.5, startH: 80, riseDuration: 
   }
 
   addEventListener("resize", () => { const ci = centerIndex(scroll); measure(); if (!userInteracted) { scroll = target = centerForIndex(ci); } });
-  if (ENTRY.enabled) playEntry(); else strip.classList.add("entered");
+  if (ENTRY.enabled) playEntry(); else { strip.classList.add("entered"); setTimeout(warmAll, 1200); }
   requestAnimationFrame(tick);
   strip.classList.add("ready");
 })();

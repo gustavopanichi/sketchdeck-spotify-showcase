@@ -115,16 +115,17 @@ a.hero-logos:focus-visible { outline-offset: 8px; }
 main.page { padding: 0 var(--gutter) 14vh; }
 .page .frame { margin-top: 24px; }
 :root { --frame-pad: clamp(16px, 4vw, 56px); --frame-h: min(calc((100vw - 2 * var(--gutter)) * 9 / 16), 82vh); }
-.frame { margin: 0 0 clamp(32px, 6vw, 80px); width: 100%; aspect-ratio: 16 / 9; max-height: 82vh; border-radius: var(--radius); overflow: hidden; background: var(--tile); display: grid; place-items: center; }
+/* 16:9, never taller than 82vh: when that cap applies the frame narrows and centres instead of cropping the picture */
+.frame { margin: 0 auto clamp(32px, 6vw, 80px); width: min(100%, calc(82vh * 16 / 9)); aspect-ratio: 16 / 9; border-radius: var(--radius); overflow: hidden; background: var(--tile); display: grid; place-items: center; }
 .frame img, .frame video { width: 100%; height: 100%; object-fit: cover; }
-.frame-full { aspect-ratio: auto; max-height: none; background: transparent; }
+.frame-full { width: 100%; aspect-ratio: auto; background: transparent; }
 .frame-full img { height: auto; object-fit: contain; }
 .frame-tint { background: var(--tint); padding: var(--frame-pad); }
 .frame-tint img { object-fit: contain; }
 .frame-tint.ill-multi { grid-auto-flow: column; grid-auto-columns: 1fr; gap: clamp(12px, 2vw, 32px); }
 .frame-tint.ill-multi img { max-height: 100%; }
-.frame-video { background: #000; aspect-ratio: auto; max-height: none; display: block; }
-.frame-video video { width: 100%; height: auto; max-height: 82vh; object-fit: contain; display: block; }
+.frame-video { background: #000; display: block; }
+.frame-video video { width: 100%; height: 100%; object-fit: contain; display: block; }
 .anim-in main > :not(.frame):not(.hero-logos) { animation: rise .6s cubic-bezier(.2, .8, .2, 1) both; }
 .anim-in .frame { animation: none; }
 @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
@@ -197,7 +198,7 @@ main.page { padding: 0 var(--gutter) 14vh; }
 .ill-rest.ill-stack { grid-template-columns: 1fr; }
 .ill-tile { border-radius: var(--radius); overflow: hidden; background: var(--tint); }
 .ill-tile img { width: 100%; }
-.infographic .frame-tint { padding: 0; aspect-ratio: auto; max-height: none; display: block; }
+.infographic .frame-tint { width: 100%; padding: 0; aspect-ratio: auto; display: block; }
 .infographic .frame-tint img { object-fit: contain; width: 100%; height: auto; }
 .ill-rest.ill-two { grid-template-columns: 1fr 1fr; }
 @media (max-width: 700px) { .ill-rest.ill-two { grid-template-columns: 1fr; } }
