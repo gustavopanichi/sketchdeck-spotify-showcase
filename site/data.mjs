@@ -10,20 +10,78 @@ export const site = {
 // Source: SketchDeck platform (project records across all Spotify accounts), pulled October 2026.
 export const stats = [
   { value: "2018", label: "First REVERB project. Spotify has worked with SketchDeck across six separate accounts since then." },
-  { value: "900+", label: "Projects placed across Spotify accounts: REVERB, Finance, Finance Strategy Ops, Songwriting, and pay-per-project teams." },
-  { value: "22", label: "Pieces selected here, from a 2019 Serge Gainsbourg infographic to deck systems shipped in 2026." },
+  { value: "377", label: "Projects placed across Spotify accounts: REVERB, Finance, Finance Strategy Ops, Songwriting, and pay-per-project teams." },
+  { value: "{pieces}", label: "Pieces selected here, from a 2019 Serge Gainsbourg infographic to deck systems shipped in 2026." }, // {pieces} = number of projects below, filled in by build.mjs
 ];
 
 // People, from SketchDeck project records (team rosters) on the showcased projects.
+// Full names from the SketchDeck connector and Gustavo; photos in assets/img/team (black and white).
 export const people = [
-  { name: "Matthew Gorham", role: "Account lead and project management" },
-  { name: "Gustavo Panichi", role: "Creative direction" },
+  { name: "Matthew Gorham", role: "Project management", photo: "matthew.jpg", note: "Your first call for anything." },
+  { name: "Monet Sommer", role: "Account lead", photo: "monet.jpg" },
+  { name: "Chris Lauder", role: "Account lead", photo: "chris-lauder.jpg" },
+  { name: "Gustavo Panichi", role: "Creative direction", photo: "gustavo.jpg" },
 ];
-export const designers = ["Luanna Correia", "Jessica Souza", "Bruno Moncada", "Aleksey Tiurin", "Leandro Feuz", "Marc Lawrence", "Sherman Fuchs", "Katherine Lahude"];
+export const designers = [
+  { name: "Jessica Souza", role: "Brand Manager", photo: "jessica.jpg" },
+  { name: "Luanna Correia", role: "Lead Designer", photo: "luanna.jpg" },
+  { name: "Katherine Lahude", role: "Lead Designer", photo: "katherine.jpg" },
+  { name: "Bruno Moncada", role: "Animation and Motion", photo: "bruno.jpg" },
+  { name: "Marc Lawrence", role: "Animation and Motion", photo: "marc.jpg" },
+  { name: "Aleksey Tiurin", role: "Illustrator", photo: "aleksey.jpg" },
+  { name: "Daniella Ferretti", role: "Illustrator", photo: "dani.jpg" },
+  { name: "Ribhalang Khariap", role: "PowerPoint and Google Slides specialist", photo: "ribha.jpg" }, // wording to be confirmed
+  { name: "Leandro Feuz", role: "Designer", photo: "leandro.jpg" },
+  { name: "Sherman Fuchs", role: "Designer", photo: "sherman.jpg" },
+];
+
+// Intro sections for the drawer, from the client-safe "intro slides copy" doc (Oct 13, 2026). Speaker notes,
+// suggested visuals and [bracketed] items are deliberately left out.
+export const intro = {
+  who: {
+    headline: "A creative team that works the way Spotify does",
+    body: "SketchDeck is a creative studio. We design presentations, brand systems, video, illustration, social content, infographics and much more. We've worked with Spotify teams since 2018, across six accounts and more than 350 projects.",
+  },
+  reverb: {
+    headline: "One monthly pool of credits, used as and when you need it",
+    body: "REVERB is Spotify's membership with SketchDeck. Each month a set number of credits goes into your credit pool. Every request draws from the credit pool, so small jobs use a few and larger projects use more. Credits you haven't used roll over for 60 days.",
+    monthlyCredits: "55",
+  },
+  process: {
+    headline: "From brief to final files in four steps",
+    steps: [
+      ["Brief", "You send a request with what you need, the audience and the deadline, or add us as the Vendor in your Airtable setup"],
+      ["Estimate", "We confirm the scope and estimated credits it will use before anything starts."],
+      ["Design and feedback", "A first round comes back to you within 1-3 business days, depending on the urgency."],
+      ["Delivery", "Final files in the formats you need, ready to use."],
+    ],
+    turnaround: [
+      ["Small jobs", "such as a slide or a social asset", "1-2 working days"],
+      ["Medium jobs", "such as a short deck or an infographic", "2-3 working days per iteration"],
+      ["Larger projects", "such as a branding system or a video", "usually runs ~3 weeks total"],
+    ],
+  },
+  team: {
+    headline: "One first call, with the team behind you",
+    request: "Airtable, SketchDeck platform or Slack",
+  },
+  year: {
+    headline: "How Spotify teams have used the membership this year",
+    // the doc's figures (1,580 credits, ~130 a month, Oct 2025 to Sep 2026) did not match the credit export; these do
+    body: "Between October 2025 and October 2026, Spotify teams used around 1,525 credits, an average of about 125 a month. The busiest months were December, April and July.",
+    highlights: ["ai-show-and-tell", "tekniska-museet", "strategy-days-takeaways"], // a deck system, a video and an infographic
+  },
+};
+
+// Credits used per month, from the SketchDeck credit export (2026-10-13). October 2026 is still in progress.
+export const credits = [
+  ["2025-10", 48.6], ["2025-11", 95.7], ["2025-12", 238.9], ["2026-01", 163.9], ["2026-02", 145.6], ["2026-03", 159.1],
+  ["2026-04", 207.7], ["2026-05", 72.8], ["2026-06", 69.9], ["2026-07", 214.7], ["2026-08", 1.7], ["2026-09", 77.3], ["2026-10", 29.6],
+];
+export const creditsOngoing = "2026-10";
 // Spotify-side: distinct collaborators on the showcased projects, and currently active users in the REVERB account.
 export const orgFacts = [
-  { value: "19", label: "Spotify collaborators across the pieces shown here" },
-  { value: "3", label: "Active REVERB members in the last 30 days" },
+  { value: "19", label: "Spotify collaborators across the pieces shown here" }, // pending: may be removed
 ];
 
 export const teams = [
@@ -88,6 +146,7 @@ export const cardVideos = {
   "ai-show-and-tell": { video: "ai-show-and-tell-cover.mp4" },
   "spotify-18th-birthday": { video: "spotify-18th-birthday-loop.mp4" },
   "tekniska-museet": { video: "tekniska-museet-loop.mp4" },
+  "heartbeat-sizzle": { video: "heartbeat-sizzle-loop.mp4" },
 };
 
 // Aspect ratio (w/h) of each project's assets/img/<slug>/card.jpg, used by the home carousel.
@@ -97,7 +156,6 @@ export const cardRatios = {
   "spotifest": 0.696,
   "prompted-playlist": 1.779,
   "ai-show-and-tell": 1.779,
-  "new-wave": 1.779,
   "ai-at-spotify": 1.779,
   "spotify-18th-birthday": 1.779,
   "tekniska-museet": 1.779,
@@ -213,6 +271,44 @@ export const projects = [
       { src: "tshirt.jpg", alt: "T-shirts", ratio: "3/2" },
     ],
   },
+  {
+    slug: "beat-branding",
+    kind: "case",
+    title: "Beat Branding",
+    category: "Branding",
+    year: "2025",
+    team: "Spotify REVERB",
+    services: ["Logo and identity", "Banner system", "Social and comms templates", "Brand assets"],
+    intro: "A brand identity for Beat, Spotify's new home for internal news, built to feel lively, liquid and unmistakably Spotify.",
+    sections: [
+      { h: "The brief", p: "Spotify was moving its internal communications to a new platform, Beat, the place employees go for company news, updates from their own organisation and market, and the tools they use every day. It needed an identity people would recognise at a glance and want to open." },
+      { h: "The idea", p: "A pulse you can see. The wordmark carries a cluster of soft, grainy shapes that rise like a beat, and the same liquid forms flow through every banner and card in Spotify greens, yellows, purples and pinks." },
+      { h: "What we made", p: "The Beat logo and its Beat Live variant, an icon, Spotify logo and bug backgrounds, a full set of page banners for regions, business teams, global units and support functions, plus organisation update, new events and content cards." },
+    ],
+    hero: "hero.jpg",
+    gallery: [
+      { src: "logo-white.jpg", alt: "Beat logo on green", half: true },
+      { src: "logo-black.jpg", alt: "Beat logo on white", half: true },
+      { src: "logo-live-white.jpg", alt: "Beat Live logo on green", half: true },
+      { src: "logo-live-black.jpg", alt: "Beat Live logo on white", half: true },
+      { src: "icon-green.jpg", alt: "Beat icon on green", half: true, ratio: "1/1" },
+      { src: "icon-white.jpg", alt: "Beat icon on white", half: true, ratio: "1/1" },
+      { src: "banner-beat.jpg", alt: "Beat Live banner", ratio: "2881/358" },
+      { src: "org-update.jpg", alt: "Organization update card", half: true, ratio: "1530/886" },
+      { src: "new-events.jpg", alt: "New events card", half: true, ratio: "1530/886" },
+      { src: "banner-europe.jpg", alt: "Europe region banner", half: true, ratio: "2881/601" },
+      { src: "banner-advertising.jpg", alt: "Advertising banner", half: true, ratio: "2881/601" },
+      { src: "banner-rhythm.jpg", alt: "Spotify Rhythm banner", half: true, ratio: "2881/601" },
+      { src: "banner-sustainability.jpg", alt: "Sustainability banner", half: true, ratio: "2881/601" },
+      { src: "banner-hr.jpg", alt: "Human Resources banner", half: true, ratio: "2881/601" },
+      { src: "banner-business.jpg", alt: "Business banner", half: true, ratio: "2881/601" },
+      { src: "spotify-logo-green.jpg", alt: "Spotify logo on the Beat green background", half: true, ratio: "3062/1774" },
+      { src: "spotify-logo-yellow.jpg", alt: "Spotify logo on the Beat yellow background", half: true, ratio: "3062/1774" },
+      { src: "spotify-bug-green.jpg", alt: "Spotify bug on green", half: true, ratio: "3062/1774" },
+      { src: "spotify-bug-yellow.jpg", alt: "Spotify bug on yellow", half: true, ratio: "3062/1774" },
+      { src: "music-card.jpg", alt: "Music content card", ratio: "2881/1755" },
+    ],
+  },
 
   // ---------------------------------------------------------------- Presentations
   {
@@ -266,31 +362,6 @@ export const projects = [
     ],
   },
   {
-    slug: "new-wave",
-    kind: "case",
-    title: "The New Wave",
-    category: "Presentations",
-    year: "2026",
-    team: "Spotify REVERB",
-    services: ["Deck template", "Visual system", "Data slides"],
-    intro: "A 64-slide presentation system in four colourways, built around a bold ribbon pattern that reads from a distance.",
-    sections: [
-      { h: "The brief", p: "Spotify needed a presentation template for The New Wave, flexible enough to host artist stats, quotes and long-form sections while staying instantly recognisable. It had to be delivered on an express timeline." },
-      { h: "The idea", p: "One thick, looping ribbon pattern, cut and cropped differently on every slide type, in mint, salmon, mustard and steel blue on black. Because the pattern is the identity, the content can be plain: white type, big numbers, a photo. The four colourways let presenters theme a section without breaking the system." },
-      { h: "What we made", p: "Three cover options in four colours, agenda, headline, section dividers, stat slides for artist milestones, quote slides and closers, 64 layouts in total, delivered in two design rounds." },
-    ],
-    hero: "hero.jpg",
-    gallery: [
-      { src: "02.jpg", alt: "Cover option 2", half: true }, { src: "03.jpg", alt: "Cover option 3", half: true },
-      { src: "04.jpg", alt: "Agenda", half: true }, { src: "05.jpg", alt: "Headline slide, mint", half: true },
-      { src: "06.jpg", alt: "Headline slide, mustard", half: true }, { src: "07.jpg", alt: "Section divider", half: true },
-      { src: "08.jpg", alt: "Artist stat slide", half: true }, { src: "09.jpg", alt: "Artist stat with photo", half: true },
-      { src: "10.jpg", alt: "Artist stat, mustard", half: true }, { src: "11.jpg", alt: "Section divider, mint", half: true },
-      { src: "12.jpg", alt: "Quote slide", half: true }, { src: "13.jpg", alt: "Quote slide, mint", half: true },
-      { src: "14.jpg", alt: "Section divider with photo", half: true }, { src: "15.jpg", alt: "Thank you", half: true },
-    ],
-  },
-  {
     slug: "ai-at-spotify",
     kind: "case",
     title: "AI at Spotify",
@@ -339,6 +410,17 @@ export const projects = [
     video: "tekniska-museet.mp4",
     poster: "poster.jpg",
   },
+  {
+    slug: "heartbeat-sizzle",
+    kind: "video",
+    title: "Project Heartbeat Sizzle",
+    category: "Video",
+    year: "2025",
+    team: "Spotify REVERB",
+    intro: "The launch film for Beat, Spotify's new internal news hub: a fast, subtitled sizzle that shows employees what moves over from Workplace and where to find company news, their teams and their tools.",
+    video: "heartbeat-sizzle.mp4",
+    poster: "poster.jpg",
+  },
 
   // ---------------------------------------------------------------- Social cards
   {
@@ -385,13 +467,12 @@ export const projects = [
   },
 
   // ---------------------------------------------------------------- Illustrations
-  { slug: "welcome-to-new-york", kind: "illustration", title: "Welcome to New York", category: "Illustration", team: "Spotify REVERB", bg: "#6950E5", full: "hero.jpg", details: 4 },
-  { slug: "heart", kind: "illustration", title: "Heart", category: "Illustration", team: "Spotify REVERB", bg: "#7656FF", full: "hero.jpg", details: 4 },
-  { slug: "execution-guidance", kind: "illustration", title: "Execution Guidance", category: "Illustration", year: "2024", team: "Spotify REVERB", bg: "#FBEAEE", images: ["1.png", "2.png", "3.png"], full: "hero.jpg", details: 4 },
-  { slug: "one-million-tickets", kind: "illustration", title: "1 Million Tickets", category: "Illustration", team: "Spotify Live Events", bg: "#000000", full: "hero.jpg", details: 4 },
-  { slug: "space-biker", kind: "illustration", title: "Space Biker on Pegasus", category: "Illustration", team: "Spotify Productivity Engineering", bg: "#161638", full: "hero.jpg", details: 4 },
-  { slug: "punk-rider", kind: "illustration", title: "Punk Rider", category: "Illustration", team: "Spotify Productivity Engineering", bg: "#161638", full: "hero.jpg", details: 4 },
-  { slug: "strategy-days", kind: "illustration", title: "Strategy Days", category: "Illustration", year: "2024", team: "Spotify REVERB", bg: "#F5E6E0", images: ["1.png", "2.png", "3.png"], full: "hero.jpg", details: 4 },
+  { slug: "welcome-to-new-york", kind: "illustration", title: "Welcome to New York", category: "Illustration", team: "Spotify REVERB", bg: "#6950E5", full: "hero.jpg" },
+  { slug: "heart", kind: "illustration", title: "Heart", category: "Illustration", team: "Spotify REVERB", bg: "#7656FF", full: "hero.jpg" },
+  { slug: "execution-guidance", kind: "illustration", title: "Execution Guidance", category: "Illustration", year: "2024", team: "Spotify REVERB", bg: "#FBEAEE", images: ["1.png", "2.png", "3.png"], full: "hero.jpg" },
+  { slug: "one-million-tickets", kind: "illustration", title: "1 Million Tickets", category: "Illustration", team: "Spotify Live Events", bg: "#000000", full: "hero.jpg" },
+  { slug: "space-biker", kind: "illustration", title: "Space Biker on Pegasus", category: "Illustration", team: "Spotify Productivity Engineering", bg: "#161638", full: "hero.jpg" },
+  { slug: "strategy-days", kind: "illustration", title: "Strategy Days", category: "Illustration", year: "2024", team: "Spotify REVERB", bg: "#F5E6E0", images: ["1.png", "2.png", "3.png"], full: "hero.jpg" },
 
   // ---------------------------------------------------------------- Infographics
   { slug: "strategy-days-takeaways", kind: "illustration", title: "Strategy Days: Top Takeaways", category: "Infographic", year: "2025", team: "Spotify REVERB", bg: "#0E0A1A", images: ["01.jpg", "02.jpg", "03.jpg"], stack: true },

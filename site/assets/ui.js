@@ -20,6 +20,39 @@
   close.addEventListener("click", () => set(false));
   scrim.addEventListener("click", () => set(false));
   addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("menu-open")) set(false); });
+
+  // tabs: one panel at a time; arrow keys move between tabs
+  const tabs = [...side.querySelectorAll('[role="tab"]')];
+  const select = (tab, focus) => {
+    tabs.forEach((t) => {
+      const on = t === tab;
+      t.setAttribute("aria-selected", String(on)); t.tabIndex = on ? 0 : -1;
+      const panel = document.getElementById(t.getAttribute("aria-controls"));
+      if (panel) panel.hidden = !on;
+    });
+    if (focus) tab.focus();
+  };
+  tabs.forEach((t, i) => {
+    t.addEventListener("click", () => select(t, false));
+    t.addEventListener("keydown", (e) => {
+      let j = null;
+      if (e.key === "ArrowRight") j = (i + 1) % tabs.length;
+      else if (e.key === "ArrowLeft") j = (i - 1 + tabs.length) % tabs.length;
+      else if (e.key === "Home") j = 0;
+      else if (e.key === "End") j = tabs.length - 1;
+      if (j !== null) { e.preventDefault(); select(tabs[j], true); }
+    });
+  });
+
+  // highlights: on the home page they open in place like a carousel card; elsewhere they are plain links
+  side.querySelectorAll(".hl[data-slug]").forEach((a) => a.addEventListener("click", (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    const card = document.querySelector(`.ring a.card[href="work/${a.dataset.slug}.html"]`);
+    if (!card) return;
+    e.preventDefault();
+    set(false);
+    setTimeout(() => card.click(), 380); // let the drawer slide away first
+  }));
 })();
 
 // Light / dark switch. The choice is kept in localStorage and applied before first paint by a line in <head>.

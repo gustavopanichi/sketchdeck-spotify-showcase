@@ -9,7 +9,7 @@
 <script>try{if(localStorage.getItem("theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
 <link rel="preload" href="../assets/fonts/SpotifyMix-Medium.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../assets/fonts/SpotifyMix-Extrabold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../assets/style.css?v=mv01li4g">
+<link rel="stylesheet" href="../assets/style.css?v=mv6lufby">
 <style>body{--tint:#FBEAEE}</style>
 </head>
 <body class="ill ">
@@ -28,20 +28,81 @@
     <div class="drawer-inner">
       <div class="drawer-top">
         <p class="sidebar-eyebrow">SketchDeck × Spotify</p>
-        <h2 class="sidebar-title">A working relationship, by the numbers</h2>
+        <div class="tabs" role="tablist" aria-label="About the relationship">
+          <button class="tab" role="tab" id="tab-who" aria-controls="panel-who" aria-selected="true" tabindex="0">Who we are</button><button class="tab" role="tab" id="tab-numbers" aria-controls="panel-numbers" aria-selected="false" tabindex="-1">By the numbers</button><button class="tab" role="tab" id="tab-team" aria-controls="panel-team" aria-selected="false" tabindex="-1">Your team</button><button class="tab" role="tab" id="tab-process" aria-controls="panel-process" aria-selected="false" tabindex="-1">How a project runs</button><button class="tab" role="tab" id="tab-year" aria-controls="panel-year" aria-selected="false" tabindex="-1">The last 12 months</button>
+        </div>
       </div>
-      <dl class="stats">
-        <div class="stat"><dt>2018</dt><dd>First REVERB project. Spotify has worked with SketchDeck across six separate accounts since then.</dd></div><div class="stat"><dt>900+</dt><dd>Projects placed across Spotify accounts: REVERB, Finance, Finance Strategy Ops, Songwriting, and pay-per-project teams.</dd></div><div class="stat"><dt>22</dt><dd>Pieces selected here, from a 2019 Serge Gainsbourg infographic to deck systems shipped in 2026.</dd></div><div class="stat"><dt>19</dt><dd>Spotify collaborators across the pieces shown here</dd></div><div class="stat"><dt>3</dt><dd>Active REVERB members in the last 30 days</dd></div>
-      </dl>
-      <div class="drawer-cols drawer-people">
-        <div>
-          <h3 class="sidebar-h">The SketchDeck team</h3>
-          <ul class="people"><li><strong>Matthew Gorham</strong><span>Account lead and project management</span></li><li><strong>Gustavo Panichi</strong><span>Creative direction</span></li></ul>
-        </div>
-        <div>
-          <h3 class="sidebar-h">Designers on this work</h3>
-          <ul class="designers"><li>Luanna Correia</li><li>Jessica Souza</li><li>Bruno Moncada</li><li>Aleksey Tiurin</li><li>Leandro Feuz</li><li>Marc Lawrence</li><li>Sherman Fuchs</li><li>Katherine Lahude</li></ul>
-        </div>
+      <div class="panels">
+        <section class="panel panel-who" role="tabpanel" id="panel-who" aria-labelledby="tab-who">
+          <div class="panel-col">
+            <h2 class="panel-title">A creative team that works the way Spotify does</h2>
+            <p class="panel-body">SketchDeck is a creative studio. We design presentations, brand systems, video, illustration, social content, infographics and much more. We've worked with Spotify teams since 2018, across six accounts and more than 350 projects.</p>
+          </div>
+          <div class="panel-col">
+            <h3 class="panel-sub">REVERB and how the membership works</h3>
+            <p class="panel-lead">One monthly pool of credits, used as and when you need it</p>
+            <p class="panel-body">REVERB is Spotify's membership with SketchDeck. Each month a set number of credits goes into your credit pool. Every request draws from the credit pool, so small jobs use a few and larger projects use more. Credits you haven't used roll over for 60 days.</p>
+            <figure class="pool" aria-label="Each month credits go into the pool, requests draw them down, and unused credits roll over for 60 days">
+    <div class="pool-row">
+      <div class="pool-month">
+        <span class="pool-in">+55 credits</span>
+        <div class="pool-tank"><i class="pool-left" style="height:65%"></i><i class="pool-used" style="height:35%"><span>requests</span></i></div>
+        <span class="pool-label">Month 1</span>
+      </div><span class="pool-arrow" aria-hidden="true">→</span>
+      <div class="pool-month">
+        <span class="pool-in">+55 credits</span>
+        <div class="pool-tank"><i class="pool-left" style="height:40%"></i><i class="pool-used" style="height:60%"><span>requests</span></i></div>
+        <span class="pool-label">Month 2</span>
+      </div><span class="pool-arrow" aria-hidden="true">→</span>
+      <div class="pool-month">
+        <span class="pool-in">+55 credits</span>
+        <div class="pool-tank"><i class="pool-left" style="height:55%"></i><i class="pool-used" style="height:45%"><span>requests</span></i></div>
+        <span class="pool-label">Month 3</span>
+      </div>
+    </div>
+    <figcaption><span class="pool-key pool-key-left"></span>Unused credits roll over for 60 days <span class="pool-key pool-key-used"></span>Drawn down by requests</figcaption>
+  </figure>
+          </div>
+        </section>
+        <section class="panel panel-numbers" role="tabpanel" id="panel-numbers" aria-labelledby="tab-numbers" hidden>
+          <h2 class="panel-title">A working relationship, by the numbers</h2>
+          <dl class="stats">
+            <div class="stat"><dt>2018</dt><dd>First REVERB project. Spotify has worked with SketchDeck across six separate accounts since then.</dd></div><div class="stat"><dt>377</dt><dd>Projects placed across Spotify accounts: REVERB, Finance, Finance Strategy Ops, Songwriting, and pay-per-project teams.</dd></div><div class="stat"><dt>22</dt><dd>Pieces selected here, from a 2019 Serge Gainsbourg infographic to deck systems shipped in 2026.</dd></div><div class="stat"><dt>19</dt><dd>Spotify collaborators across the pieces shown here</dd></div>
+          </dl>
+        </section>
+        <section class="panel panel-team" role="tabpanel" id="panel-team" aria-labelledby="tab-team" hidden>
+          <h2 class="panel-title">One first call, with the team behind you</h2>
+          <div class="team-cols">
+            <div>
+              <h3 class="sidebar-h">The SketchDeck team</h3>
+              <ul class="people"><li><img class="avatar" src="../assets/img/team/matthew.jpg?v=mv6lufby" alt="" width="34" height="34" decoding="async"><span class="who"><strong>Matthew Gorham</strong><span>Project management. Your first call for anything.</span></span></li><li><img class="avatar" src="../assets/img/team/monet.jpg?v=mv6lufby" alt="" width="34" height="34" decoding="async"><span class="who"><strong>Monet Sommer</strong><span>Account lead</span></span></li><li><img class="avatar" src="../assets/img/team/chris-lauder.jpg?v=mv6lufby" alt="" width="34" height="34" decoding="async"><span class="who"><strong>Chris Lauder</strong><span>Account lead</span></span></li><li><img class="avatar" src="../assets/img/team/gustavo.jpg?v=mv6lufby" alt="" width="34" height="34" decoding="async"><span class="who"><strong>Gustavo Panichi</strong><span>Creative direction</span></span></li></ul>
+              <p class="request"><span class="sidebar-h">How to send a request</span>Airtable, SketchDeck platform or Slack</p>
+            </div>
+            <div>
+              <h3 class="sidebar-h">Designers on Spotify work</h3>
+              <ul class="designers"><li><img class="avatar" src="../assets/img/team/jessica.jpg?v=mv6lufby" alt="" width="34" height="34" decoding="async"><span class="who"><strong>Jessica Souza</strong><span>Brand Manager</span></span></li><li><img class="avatar" src="../assets/img/team/luanna.jpg?v=mv6lufby" alt="" width="34" height="34" decoding="async"><span class="who"><strong>Luanna Correia</strong><span>Lead Designer</span></span></li><li><img class="avatar" src="../assets/img/team/katherine.jpg?v=mv6lufby" alt="" width="34" height="34" decoding="async"><span class="who"><strong>Katherine Lahude</strong><span>Lead Designer</span></span></li><li><img class="avatar" src="../assets/img/team/bruno.jpg?v=mv6lufby" alt="" width="34" height="34" decoding="async"><span class="who"><strong>Bruno Moncada</strong><span>Animation and Motion</span></span></li><li><img class="avatar" src="../assets/img/team/marc.jpg?v=mv6lufby" alt="" width="34" height="34" decoding="async"><span class="who"><strong>Marc Lawrence</strong><span>Animation and Motion</span></span></li><li><img class="avatar" src="../assets/img/team/aleksey.jpg?v=mv6lufby" alt="" width="34" height="34" decoding="async"><span class="who"><strong>Aleksey Tiurin</strong><span>Illustrator</span></span></li><li><img class="avatar" src="../assets/img/team/dani.jpg?v=mv6lufby" alt="" width="34" height="34" decoding="async"><span class="who"><strong>Daniella Ferretti</strong><span>Illustrator</span></span></li><li><img class="avatar" src="../assets/img/team/ribha.jpg?v=mv6lufby" alt="" width="34" height="34" decoding="async"><span class="who"><strong>Ribhalang Khariap</strong><span>PowerPoint and Google Slides specialist</span></span></li><li><img class="avatar" src="../assets/img/team/leandro.jpg?v=mv6lufby" alt="" width="34" height="34" decoding="async"><span class="who"><strong>Leandro Feuz</strong><span>Designer</span></span></li><li><img class="avatar" src="../assets/img/team/sherman.jpg?v=mv6lufby" alt="" width="34" height="34" decoding="async"><span class="who"><strong>Sherman Fuchs</strong><span>Designer</span></span></li></ul>
+            </div>
+          </div>
+        </section>
+        <section class="panel panel-process" role="tabpanel" id="panel-process" aria-labelledby="tab-process" hidden>
+          <h2 class="panel-title">From brief to final files in four steps</h2>
+          <ol class="steps"><li><span class="step-n">1</span><strong>Brief</strong><p>You send a request with what you need, the audience and the deadline, or add us as the Vendor in your Airtable setup</p></li><li><span class="step-n">2</span><strong>Estimate</strong><p>We confirm the scope and estimated credits it will use before anything starts.</p></li><li><span class="step-n">3</span><strong>Design and feedback</strong><p>A first round comes back to you within 1-3 business days, depending on the urgency.</p></li><li><span class="step-n">4</span><strong>Delivery</strong><p>Final files in the formats you need, ready to use.</p></li></ol>
+          <div class="turnaround">
+            <h3 class="sidebar-h">Typical turnaround</h3>
+            <ul><li><strong>Small jobs</strong><span>such as a slide or a social asset</span><b>1-2 working days</b></li><li><strong>Medium jobs</strong><span>such as a short deck or an infographic</span><b>2-3 working days per iteration</b></li><li><strong>Larger projects</strong><span>such as a branding system or a video</span><b>usually runs ~3 weeks total</b></li></ul>
+          </div>
+        </section>
+        <section class="panel panel-year" role="tabpanel" id="panel-year" aria-labelledby="tab-year" hidden>
+          <div class="year-head">
+            <h2 class="panel-title">How Spotify teams have used the membership this year</h2>
+            <p class="panel-body">Between October 2025 and October 2026, Spotify teams used around 1,525 credits, an average of about 125 a month. The busiest months were December, April and July.</p>
+          </div>
+          <figure class="chart" aria-label="Credits used per month, October 2025 to October 2026">
+    <div class="chart-bars"><div class="bar"><span class="bar-v">49</span><i style="height:20.3%"></i><span class="bar-m">Oct<em>2025</em></span></div><div class="bar"><span class="bar-v">96</span><i style="height:40.1%"></i><span class="bar-m">Nov</span></div><div class="bar"><span class="bar-v">239</span><i style="height:100.0%"></i><span class="bar-m">Dec</span></div><div class="bar"><span class="bar-v">164</span><i style="height:68.6%"></i><span class="bar-m">Jan<em>2026</em></span></div><div class="bar"><span class="bar-v">146</span><i style="height:60.9%"></i><span class="bar-m">Feb</span></div><div class="bar"><span class="bar-v">159</span><i style="height:66.6%"></i><span class="bar-m">Mar</span></div><div class="bar"><span class="bar-v">208</span><i style="height:86.9%"></i><span class="bar-m">Apr</span></div><div class="bar"><span class="bar-v">73</span><i style="height:30.5%"></i><span class="bar-m">May</span></div><div class="bar"><span class="bar-v">70</span><i style="height:29.3%"></i><span class="bar-m">Jun</span></div><div class="bar"><span class="bar-v">215</span><i style="height:89.9%"></i><span class="bar-m">Jul</span></div><div class="bar"><span class="bar-v">2</span><i style="height:1.5%"></i><span class="bar-m">Aug</span></div><div class="bar"><span class="bar-v">77</span><i style="height:32.4%"></i><span class="bar-m">Sep</span></div><div class="bar bar-ongoing"><span class="bar-v">30</span><i style="height:12.4%"></i><span class="bar-m">Oct</span></div></div>
+    <figcaption>Credits used per month. October 2026 is still in progress.</figcaption>
+  </figure>
+          <div class="highlights"><h3 class="sidebar-h">Highlights</h3><div class="hl-row"><a class="hl" href="../work/ai-show-and-tell.html" data-slug="ai-show-and-tell"><img src="../assets/img/ai-show-and-tell/card.jpg?v=mv6lufby" alt="" loading="lazy"><span><b>AI Show &amp; Tell</b>Presentations · 2026</span></a><a class="hl" href="../work/tekniska-museet.html" data-slug="tekniska-museet"><img src="../assets/img/tekniska-museet/card.jpg?v=mv6lufby" alt="" loading="lazy"><span><b>Tekniska Museet Milestone Film</b>Video · 2026</span></a><a class="hl" href="../work/strategy-days-takeaways.html" data-slug="strategy-days-takeaways"><img src="../assets/img/strategy-days-takeaways/card.jpg?v=mv6lufby" alt="" loading="lazy"><span><b>Strategy Days: Top Takeaways</b>Infographic · 2025</span></a></div></div>
+        </section>
       </div>
     </div>
     <button class="drawer-close" id="sidebarClose" aria-label="Close"><span class="menu-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></button>
@@ -53,14 +114,14 @@
     <span class="hero-x" aria-hidden="true">×</span>
     <img class="hero-logo hero-logo-sp" src="../assets/img/ui/spotify.png" alt="Spotify">
   </a>
-  <figure class="frame"><img src="../assets/img/execution-guidance/hero.jpg" alt="Execution Guidance" decoding="async" fetchpriority="high"></figure>
+  <figure class="frame"><img src="../assets/img/execution-guidance/hero.jpg?v=mv6lufby" alt="Execution Guidance" decoding="async" fetchpriority="high"></figure>
   <section class="case-head">
     <p class="eyebrow">Illustration · 2024</p>
     <h1>Execution Guidance</h1>
   </section>
-  <section class="gallery details"><figure class="g g-half g-square"><img src="../assets/img/execution-guidance/detail-1.jpg" alt="Execution Guidance, detail 1" loading="lazy" decoding="async"></figure><figure class="g g-half g-square"><img src="../assets/img/execution-guidance/detail-2.jpg" alt="Execution Guidance, detail 2" loading="lazy" decoding="async"></figure><figure class="g g-half g-square"><img src="../assets/img/execution-guidance/detail-3.jpg" alt="Execution Guidance, detail 3" loading="lazy" decoding="async"></figure><figure class="g g-half g-square"><img src="../assets/img/execution-guidance/detail-4.jpg" alt="Execution Guidance, detail 4" loading="lazy" decoding="async"></figure></section>
+  
   <p class="all-work"><a href="../index.html">All work</a></p>
 </main>
-<script src="../assets/ui.js?v=mv01li4g" defer></script>
+<script src="../assets/ui.js?v=mv6lufby" defer></script>
 </body>
 </html>
