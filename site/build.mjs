@@ -4,7 +4,7 @@ import { site, stats, teams, people, designers, orgFacts, projects, cardVideos, 
 
 const V = Date.now().toString(36);
 const SITE_URL = "https://sketchdeck-spotify.vercel.app/";
-const SHARE_IMAGE = SITE_URL + "assets/img/mau-messaging/hero.jpg"; // link previews (Slack, iMessage, LinkedIn...) use this image // cache-buster for regenerated thumbnails
+const SHARE_IMAGE = SITE_URL + "assets/img/share/sketchdeck-spotify-preview.jpg"; // link previews (Slack, iMessage, LinkedIn...) use this image // cache-buster for regenerated thumbnails
 const esc = (s = "") => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 const logos = (base, link) => `
@@ -153,12 +153,16 @@ const head = (title, base, extra = "") => `<!doctype html>
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(site.description)}">
 <meta property="og:image" content="${SHARE_IMAGE}">
-<meta property="og:image:width" content="2000">
-<meta property="og:image:height" content="1124">
+<meta property="og:image:secure_url" content="${SHARE_IMAGE}">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="SketchDeck × Spotify: MAU messaging cards">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(site.description)}">
 <meta name="twitter:image" content="${SHARE_IMAGE}">
+<meta name="twitter:image:alt" content="SketchDeck × Spotify: MAU messaging cards">
 <script>try{if(localStorage.getItem("theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
 <link rel="preload" href="${base}assets/fonts/SpotifyMix-Medium.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="${base}assets/fonts/SpotifyMix-Extrabold.woff2" as="font" type="font/woff2" crossorigin>
