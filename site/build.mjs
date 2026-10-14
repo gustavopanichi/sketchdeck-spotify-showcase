@@ -2,7 +2,9 @@
 import { mkdirSync, writeFileSync, rmSync, existsSync } from "node:fs";
 import { site, stats, teams, people, designers, orgFacts, projects, cardVideos, imageDims, intro, credits, creditsOngoing } from "./data.mjs";
 
-const V = Date.now().toString(36); // cache-buster for regenerated thumbnails
+const V = Date.now().toString(36);
+const SITE_URL = "https://sketchdeck-spotify.vercel.app/";
+const SHARE_IMAGE = SITE_URL + "assets/img/mau-messaging/hero.jpg"; // link previews (Slack, iMessage, LinkedIn...) use this image // cache-buster for regenerated thumbnails
 const esc = (s = "") => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 const logos = (base, link) => `
@@ -143,6 +145,20 @@ const head = (title, base, extra = "") => `<!doctype html>
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(site.description)}">
 <meta name="theme-color" content="#FFFFFF">
+<link rel="icon" type="image/png" sizes="32x32" href="${base}assets/img/ui/favicon-32.png?v=${V}">
+<link rel="icon" type="image/png" sizes="192x192" href="${base}assets/img/ui/favicon-192.png?v=${V}">
+<link rel="apple-touch-icon" href="${base}assets/img/ui/apple-touch-icon.png?v=${V}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="${esc(site.title)}">
+<meta property="og:title" content="${esc(title)}">
+<meta property="og:description" content="${esc(site.description)}">
+<meta property="og:image" content="${SHARE_IMAGE}">
+<meta property="og:image:width" content="2000">
+<meta property="og:image:height" content="1124">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(title)}">
+<meta name="twitter:description" content="${esc(site.description)}">
+<meta name="twitter:image" content="${SHARE_IMAGE}">
 <script>try{if(localStorage.getItem("theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
 <link rel="preload" href="${base}assets/fonts/SpotifyMix-Medium.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="${base}assets/fonts/SpotifyMix-Extrabold.woff2" as="font" type="font/woff2" crossorigin>
