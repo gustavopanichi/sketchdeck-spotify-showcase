@@ -49,12 +49,12 @@ const poolVisual = () => {
 
 const creditChart = () => {
   const max = Math.max(...credits.map((c) => c[1]));
-  return `<figure class="chart" aria-label="Credits used per month, October 2025 to October 2026">
+  return `<figure class="chart" aria-label="Spend per month in dollars, October 2025 to October 2026">
     <div class="chart-bars">${credits.map(([ym, v]) => {
       const ongoing = ym === creditsOngoing;
-      return `<div class="bar${ongoing ? " bar-ongoing" : ""}"><span class="bar-v">${Math.round(v)}</span><i style="height:${Math.max(1.5, (v / max) * 100).toFixed(1)}%"></i><span class="bar-m">${monthLabel(ym)}${ym.endsWith("-01") || ym === credits[0][0] ? `<em>${ym.slice(0, 4)}</em>` : ""}</span></div>`;
+      return `<div class="bar${ongoing ? " bar-ongoing" : ""}"><span class="bar-v">${v >= 1000 ? `$${String(Math.round(v / 100) / 10)}k` : `$${v}`}</span><i style="height:${Math.max(1.5, (v / max) * 100).toFixed(1)}%"></i><span class="bar-m">${monthLabel(ym)}${ym.endsWith("-01") || ym === credits[0][0] ? `<em>${ym.slice(0, 4)}</em>` : ""}</span></div>`;
     }).join("")}</div>
-    <figcaption>Credits used per month. October 2026 is still in progress.</figcaption>
+    <figcaption>Spend per month (USD). October 2026 is still in progress.</figcaption>
   </figure>`;
 };
 

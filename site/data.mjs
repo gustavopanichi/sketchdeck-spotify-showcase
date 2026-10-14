@@ -68,15 +68,15 @@ export const intro = {
   year: {
     headline: "How Spotify teams have used the membership this year",
     // the doc's figures (1,580 credits, ~130 a month, Oct 2025 to Sep 2026) did not match the credit export; these do
-    body: "Between October 2025 and October 2026, Spotify teams used around 1,525 credits, an average of about 125 a month. The busiest months were December, April and July.",
+    body: "Between October 2025 and October 2026, Spotify teams used around $167,750 in credits, an average of about $13,750 a month. The busiest months were December, April and July.",
     highlights: ["ai-show-and-tell", "tekniska-museet", "strategy-days-takeaways"], // a deck system, a video and an infographic
   },
 };
 
-// Credits used per month, from the SketchDeck credit export (2026-10-13). October 2026 is still in progress.
+// Spend per month in dollars, from the SketchDeck export (2026-10-14: credits used x $110 per credit). October 2026 is still in progress.
 export const credits = [
-  ["2025-10", 48.6], ["2025-11", 95.7], ["2025-12", 238.9], ["2026-01", 163.9], ["2026-02", 145.6], ["2026-03", 159.1],
-  ["2026-04", 207.7], ["2026-05", 72.8], ["2026-06", 69.9], ["2026-07", 214.7], ["2026-08", 1.7], ["2026-09", 77.3], ["2026-10", 29.6],
+  ["2025-10", 5390], ["2025-11", 10560], ["2025-12", 26290], ["2026-01", 18040], ["2026-02", 16060], ["2026-03", 17490],
+  ["2026-04", 22880], ["2026-05", 8030], ["2026-06", 7700], ["2026-07", 23650], ["2026-08", 220], ["2026-09", 8470], ["2026-10", 3300],
 ];
 export const creditsOngoing = "2026-10";
 // Spotify-side: distinct collaborators on the showcased projects, and currently active users in the REVERB account.
